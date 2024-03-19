@@ -7,8 +7,20 @@
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\valuescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\app_start\\routeconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:app_start\\routeconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\migrations\\202403191357577_update-db-v2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:migrations\\202403191357577_update-db-v2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\models\\projectdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:models\\projectdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\migrations\\configuration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:migrations\\configuration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +30,60 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 4,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "202403191357577_update-db-v2.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\202403191357577_update-db-v2.cs",
+              "RelativeDocumentMoniker": "Migrations\\202403191357577_update-db-v2.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\202403191357577_update-db-v2.cs",
+              "RelativeToolTip": "Migrations\\202403191357577_update-db-v2.cs",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAQwA4AAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-19T13:58:09.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProjectDBContext.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\ProjectDBContext.cs",
+              "RelativeDocumentMoniker": "Models\\ProjectDBContext.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\ProjectDBContext.cs",
+              "RelativeToolTip": "Models\\ProjectDBContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-19T13:57:22.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Configuration.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\Configuration.cs",
+              "RelativeDocumentMoniker": "Migrations\\Configuration.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\Configuration.cs",
+              "RelativeToolTip": "Migrations\\Configuration.cs",
+              "ViewState": "AQIAAA0AAAAAAAAAAAAQwBwAAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-19T13:54:38.228Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\User.cs",
+              "RelativeDocumentMoniker": "Models\\User.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\User.cs",
+              "RelativeToolTip": "Models\\User.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAABEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-19T13:54:22.381Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,22 +92,9 @@
               "RelativeDocumentMoniker": "Controllers\\ValuesController.cs",
               "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\ValuesController.cs",
               "RelativeToolTip": "Controllers\\ValuesController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAAAAAA",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAABkAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-18T08:34:52.956Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "RouteConfig.cs",
-              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\App_Start\\RouteConfig.cs",
-              "RelativeDocumentMoniker": "App_Start\\RouteConfig.cs",
-              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\App_Start\\RouteConfig.cs",
-              "RelativeToolTip": "App_Start\\RouteConfig.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-18T08:31:15.698Z",
+              "WhenOpened": "2024-03-19T13:50:32.046Z",
               "EditorCaption": ""
             }
           ]

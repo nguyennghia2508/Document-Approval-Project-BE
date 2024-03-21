@@ -38,8 +38,7 @@
               "RelativeToolTip": "Models\\DocumentApprovalFile.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-21T16:17:07.008Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-21T16:17:07.008Z"
             },
             {
               "$type": "Document",
@@ -74,7 +73,7 @@
               "RelativeDocumentMoniker": "Controllers\\DocumentApprovalsController.cs",
               "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentApprovalsController.cs",
               "RelativeToolTip": "Controllers\\DocumentApprovalsController.cs",
-              "ViewState": "AQIAADMAAAAAAAAAAAAtwEIAAABAAAAA",
+              "ViewState": "AQIAADMAAAAAAAAAAAAtwDwAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-21T04:27:50.31Z",
               "EditorCaption": ""

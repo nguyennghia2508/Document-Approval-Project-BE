@@ -20,6 +20,5 @@ namespace Document_Approval_Project_BE.Models
         public DateTime CreateDate {  get; set; }
         public int Status { get; set; }
         public string PresentApplicant { get; set; }
-
     }
 }

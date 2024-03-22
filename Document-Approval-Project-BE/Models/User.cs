@@ -9,18 +9,19 @@ namespace Document_Approval_Project_BE.Models
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public int Id { get; set; }
+        public Guid UserId { get; set; } = Guid.NewGuid();
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [Column(TypeName = "DateTime2")]
-        public DateTime Birtday { get; set; }
+        public string Birtday { get; set; }
         public string Position { get; set; }
         public int Gender {  get; set; }
         public string JobTitle { get; set; }
         public string Company {  get; set; }
+        public Guid DepartmentId { get; set; } = Guid.Empty;
 
     }
 }

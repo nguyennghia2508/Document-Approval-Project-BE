@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net;
 using System.Web;
 using System.Web.Http;
+using DevOne.Security.Cryptography.BCrypt;
 
 namespace Document_Approval_Project_BE.Controllers
 {
@@ -14,6 +15,42 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
         // GET: api/user/{email}
+        [HttpPost]
+        [Route("register")]
+        public IHttpActionResult Register([FromBody] User user)
+        {
+            if (user == null)
+            {
+                return Ok(new
+                {
+                    state = "false",
+                    message = "Empty"
+                });
+            }
+            var userExist = db.Users.SingleOrDefault(p => p.Email == user.Email);
+            if(userExist == null)
+            {
+                var hashPassword = BCryptHelper.HashPassword(user.Password, BCryptHelper.GenerateSalt(10));
+                db.Users.Add(new User()
+                {
+                    Username = user.Username,
+                    Password = hashPassword,
+                    Email = user.Email
+                });
+                db.SaveChanges();
+                return Ok(new
+                {
+                    state = "true",
+                    message = "Register success"
+                });
+            }
+            return Ok(new
+            {
+                state = "false",
+                message = "Register false"
+            });
+        }
+
         [HttpPost]
         [Route("login")]
         public IHttpActionResult Login([FromBody] User user)
@@ -27,7 +64,7 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var userInfo = db.Users.SingleOrDefault(p => p.Email == user.Email && p.Password == user.Password);
+            var userInfo = db.Users.SingleOrDefault(p => p.Email == user.Email);
             if (userInfo == null)
             {
                 return Ok(new
@@ -37,10 +74,19 @@ namespace Document_Approval_Project_BE.Controllers
 
                 });
             }
+            if(BCryptHelper.CheckPassword(user.Password,userInfo.Password))
+            {
+                return Ok(new
+                {
+                    state = "true",
+                    userInfor = userInfo
+                });
+            }
             return Ok(new
             {
-                state = "true",
-                userInfor = userInfo
+                state = "false",
+                msg = "Invalid email or password"
+
             });
         }
     }

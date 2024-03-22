@@ -10,11 +10,11 @@ namespace Document_Approval_Project_BE.Models
     public class DocumentApprovalComment
     {
         [Key]
-        public int CommentId { get; set; }
-        public int ApprovalPersonId {  get; set; }
+        public int Id { get; set; }
+        public Guid CommentId { get; set; } = Guid.NewGuid();
+        public Guid ApprovalPersonId { get; set; } = Guid.Empty;
         public string CommentContent {  get; set; }
-        [Column(TypeName = "DateTime2")]
-        public DateTime CommentTime { get; set; }
+        public string CommentTime { get; set; }
         public Boolean IsSubComment { get; set; }
 
     }

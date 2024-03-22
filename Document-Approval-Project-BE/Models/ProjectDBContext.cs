@@ -13,10 +13,11 @@ namespace Document_Approval_Project_BE.Models
         public DbSet<DocumentApproval> DocumentApprovals { get; set; }
         public DbSet<DocumentApprovalFile> DocumentApprovalFiles { get; set; }
         public DbSet<DocumentApprovalComment> DocumentApprovalComments { get; set; }
-
+        public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentPerson> DepartmentPersons { get; set; }
         public DbSet<ApprovalPerson> ApprovalPersons { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
 
     }

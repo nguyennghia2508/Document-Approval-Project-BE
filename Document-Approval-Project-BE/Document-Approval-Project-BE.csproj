@@ -300,13 +300,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202403220901232_update-db.cs" />
-    <Compile Include="Migrations\202403220901232_update-db.Designer.cs">
-      <DependentUpon>202403220901232_update-db.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202403221602113_update-db-v2.cs" />
-    <Compile Include="Migrations\202403221602113_update-db-v2.Designer.cs">
-      <DependentUpon>202403221602113_update-db-v2.cs</DependentUpon>
+    <Compile Include="Migrations\202403250343462_update-db-v1.cs" />
+    <Compile Include="Migrations\202403250343462_update-db-v1.Designer.cs">
+      <DependentUpon>202403250343462_update-db-v1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApprovalPerson.cs" />
@@ -463,11 +459,8 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202403220901232_update-db.resx">
-      <DependentUpon>202403220901232_update-db.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202403221602113_update-db-v2.resx">
-      <DependentUpon>202403221602113_update-db-v2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202403250343462_update-db-v1.resx">
+      <DependentUpon>202403250343462_update-db-v1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

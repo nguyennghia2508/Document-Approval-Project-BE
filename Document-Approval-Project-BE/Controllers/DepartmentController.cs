@@ -19,6 +19,29 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
 
+        [HttpGet]
+        [Route("all")]
+        public IHttpActionResult GetAllDepartment()
+        {
+            try
+            {
+                var departments = db.Departments.ToList();
+
+                var topLevelDepartments = departments.Where(d => d.DepartmentLevel == 1).ToList();
+                var departmentHierarchy = topLevelDepartments.Select(d => MapDepartmentHierarchy(d, departments)).ToList();
+
+                return Ok(new
+                {
+                    state = "true",
+                    departmentHierarchy
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
         [HttpPost]
         [Route("add")]
         public IHttpActionResult AddDepartment([FromBody] Department department)
@@ -39,6 +62,10 @@ namespace Document_Approval_Project_BE.Controllers
                     DepartmentCode = department.DepartmentCode,
                     DepartmentLevel = department.DepartmentLevel,
                     ContactInfo = department.ContactInfo,
+                    ParentNode = department.ParentNode,
+                    ChildrenNode = department.ChildrenNode,
+                    DepartmentManager = department.DepartmentManager,
+                    Supervisor = department.Supervisor
                 };
 
                 db.Departments.Add(dpartment);
@@ -54,6 +81,21 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private dynamic MapDepartmentHierarchy(Department parentDepartment, List<Department> allDepartments)
+        {
+            var children = allDepartments.Where(d => d.ParentNode == parentDepartment.DepartmentId).ToList();
+            var childrenNodes = children.Select(child => MapDepartmentHierarchy(child, allDepartments)).ToList();
+
+            return new
+            {
+                DepartmentId = parentDepartment.DepartmentId,
+                DepartmentName = parentDepartment.DepartmentName,
+                ParentNode = parentDepartment.ParentNode,
+                DepartmentLevel = parentDepartment.DepartmentLevel,
+                Children = childrenNodes
+            };
         }
     }
 }

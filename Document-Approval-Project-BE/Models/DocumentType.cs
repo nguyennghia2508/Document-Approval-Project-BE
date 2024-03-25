@@ -14,5 +14,7 @@ namespace Document_Approval_Project_BE.Models
         public Guid DocumentTypeId { get; set; } = Guid.NewGuid();
         public string DocumentTypeName { get; set; }
         public Guid CategoryId { get; set; } = Guid.Empty;
+        [Column(TypeName = "DateTime2")]
+        public DateTime CreateDate {  get; set; } = DateTime.Now;
     }
 }

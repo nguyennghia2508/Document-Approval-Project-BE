@@ -16,6 +16,8 @@ namespace Document_Approval_Project_BE.Models
         public Guid ParentNode { get; set; } = Guid.Empty;
         public int DepartmentLevel { get; set; }
         public Guid ChildrenNode { get; set; } = Guid.Empty;
+        [Column(TypeName = "DateTime2")]
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         public string ContactInfo { get; set; }
         public string DepartmentCode {  get; set; }
         public Guid DepartmentManager { get; set; } = Guid.Empty;

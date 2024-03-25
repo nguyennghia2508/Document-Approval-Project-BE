@@ -66,7 +66,7 @@ namespace Document_Approval_Project_BE.Controllers
                     RelatedProposal = body.RelatedProposal,
                     Subject = body.Subject,
                     ContentSum = body.ContentSum,
-                    CreateDate = body.CreateDate ?? DateTime.Now.ToString("dd/MM/yyyy"),
+                    //CreateDate = body.CreateDate ?? DateTime.Now.ToString("dd/MM/yyyy"),
                 };
 
                 db.DocumentApprovals.Add(dcument);
@@ -75,7 +75,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                 Dictionary<string, List<ApprovalPerson>> listPerson = new Dictionary<string, List<ApprovalPerson>>();
 
-                string[] keysToCheck = { "approvers", "signers" };
+                string[] keysToCheck = { "approvers", "reference" };
 
                 foreach (var key in keysToCheck)
                 {
@@ -179,7 +179,7 @@ namespace Document_Approval_Project_BE.Controllers
         }
 
         [HttpGet]
-        [Route("getAll")]
+        [Route("all")]
         public async Task<IHttpActionResult> GetAllDocument()
         {
             var listDocument = db.DocumentApprovals.ToList();

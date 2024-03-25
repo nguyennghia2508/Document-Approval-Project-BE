@@ -13,5 +13,7 @@ namespace Document_Approval_Project_BE.Models
         public int Id { get; set; }
         public Guid CategoryId { get; set; } = Guid.NewGuid();
         public string CategoryName { get; set; }
+        [Column(TypeName = "DateTime2")]
+        public DateTime createDate { get; set; } = DateTime.Now;
     }
 }

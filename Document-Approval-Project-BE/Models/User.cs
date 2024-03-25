@@ -16,7 +16,8 @@ namespace Document_Approval_Project_BE.Models
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Birtday { get; set; }
+        [Column(TypeName = "DateTime2")]
+        public DateTime Birtday { get; set; }
         public string Position { get; set; }
         public int Gender {  get; set; }
         public string JobTitle { get; set; }

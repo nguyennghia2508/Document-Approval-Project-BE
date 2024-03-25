@@ -13,6 +13,44 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
 
+        [HttpGet]
+        [Route("all")]
+        public IHttpActionResult GetAllDocumentType()
+        {
+            try
+            {
+                var listdcumentType = db.DocumentTypes.ToList();
+                var listCategory = db.Categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
+
+                var modifiedListdcumentType = listdcumentType.Select(doc =>
+                {
+                    if(listCategory.ContainsKey(doc.CategoryId))
+                    {
+                        string categoryName = listCategory[doc.CategoryId];
+                        return new
+                        {
+                            doc.Id,
+                            doc.DocumentTypeId,
+                            doc.DocumentTypeName,
+                            CategoryName = categoryName
+                        };
+                    }
+                    return null;
+                }).ToList();
+
+                return Ok(new
+                {
+                    state = "true",
+                    listdcumentType = modifiedListdcumentType,
+                    listCategory
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
         [HttpPost]
         [Route("add")]
         public IHttpActionResult AddDocumentType([FromBody] DocumentType documentType)
@@ -47,5 +85,6 @@ namespace Document_Approval_Project_BE.Controllers
                 return InternalServerError(ex);
             }
         }
+
     }
 }

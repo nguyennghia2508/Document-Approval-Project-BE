@@ -23,7 +23,8 @@ namespace Document_Approval_Project_BE.Models
         public string RelatedProposal { get; set; }
         public string Subject { get; set; }
         public string ContentSum { get; set; }
-        public string CreateDate {  get; set; }
+        [Column(TypeName = "DateTime2")]
+        public DateTime CreateDate {  get; set; } = DateTime.Now;
         public int Status { get; set; }
         public Guid PresentApplicant { get; set; } = Guid.Empty;
 

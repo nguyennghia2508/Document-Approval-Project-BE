@@ -11,10 +11,12 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/department")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DepartmentController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
@@ -88,13 +90,27 @@ namespace Document_Approval_Project_BE.Controllers
             var children = allDepartments.Where(d => d.ParentNode == parentDepartment.DepartmentId).ToList();
             var childrenNodes = children.Select(child => MapDepartmentHierarchy(child, allDepartments)).ToList();
 
+            if(parentDepartment.ParentNode != Guid.Empty)
+            {
+                return new
+                {
+                    Id = parentDepartment.Id,
+                    DepartmentId = parentDepartment.DepartmentId,
+                    DepartmentName = parentDepartment.DepartmentName,
+                    ParentNode = parentDepartment.ParentNode,
+                    ParentNodeId = db.Departments.Single(id => id.DepartmentId == parentDepartment.ParentNode).Id,
+                    DepartmentLevel = parentDepartment.DepartmentLevel,
+                    Children = childrenNodes,
+                };
+            }
             return new
             {
+                Id = parentDepartment.Id,
                 DepartmentId = parentDepartment.DepartmentId,
                 DepartmentName = parentDepartment.DepartmentName,
                 ParentNode = parentDepartment.ParentNode,
                 DepartmentLevel = parentDepartment.DepartmentLevel,
-                Children = childrenNodes
+                Children = childrenNodes,
             };
         }
     }

@@ -3,24 +3,16 @@
   "WorkspaceRootPath": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\controllers\\documentapprovalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\documentapprovalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\documenttypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\documenttypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|d:\\project\\document-approval-project-be\\document-approval-project-be\\models\\department.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:models\\department.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,54 +30,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "HomeController.cs",
-              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\HomeController.cs",
-              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
-              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\HomeController.cs",
-              "RelativeToolTip": "Controllers\\HomeController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-25T04:43:32.816Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DocumentApprovalsController.cs",
-              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentApprovalsController.cs",
-              "RelativeDocumentMoniker": "Controllers\\DocumentApprovalsController.cs",
-              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentApprovalsController.cs",
-              "RelativeToolTip": "Controllers\\DocumentApprovalsController.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAAACYAAAAWAAAA",
+              "Title": "DocumentTypeController.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentTypeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DocumentTypeController.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentTypeController.cs",
+              "RelativeToolTip": "Controllers\\DocumentTypeController.cs",
+              "ViewState": "AQIAABIAAAAAAAAAAAApwCgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-25T04:31:48.719Z",
+              "WhenOpened": "2024-03-25T09:30:59.646Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Department.cs",
-              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\Department.cs",
-              "RelativeDocumentMoniker": "Models\\Department.cs",
-              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Models\\Department.cs",
-              "RelativeToolTip": "Models\\Department.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAAwBAAAAAwAAAA",
+              "DocumentIndex": 1,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAQwBEAAABGAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-25T04:24:32.34Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "CategoryController.cs",
-              "DocumentMoniker": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\CategoryController.cs",
-              "RelativeDocumentMoniker": "Controllers\\CategoryController.cs",
-              "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\CategoryController.cs",
-              "RelativeToolTip": "Controllers\\CategoryController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-25T04:05:29.475Z",
+              "WhenOpened": "2024-03-25T09:24:53.539Z",
               "EditorCaption": ""
             },
             {
@@ -96,7 +62,7 @@
               "RelativeDocumentMoniker": "Controllers\\DepartmentController.cs",
               "ToolTip": "D:\\Project\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DepartmentController.cs",
               "RelativeToolTip": "Controllers\\DepartmentController.cs",
-              "ViewState": "AQIAAEwAAAAAAAAAAAAowFMAAAAJAAAA",
+              "ViewState": "AQIAAC4AAAAAAAAAAAAowGQAAABxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-25T03:18:09.681Z",
               "EditorCaption": ""

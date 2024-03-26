@@ -171,3 +171,4 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.Windows.Core.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv1.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources

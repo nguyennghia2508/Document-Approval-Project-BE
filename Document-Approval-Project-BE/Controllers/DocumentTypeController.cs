@@ -5,10 +5,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/document-type")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DocumentTypeController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
@@ -19,30 +21,28 @@ namespace Document_Approval_Project_BE.Controllers
         {
             try
             {
-                var listdcumentType = db.DocumentTypes.ToList();
+                var listDocumentType = db.DocumentTypes.ToList();
                 var listCategory = db.Categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
 
-                var modifiedListdcumentType = listdcumentType.Select(doc =>
-                {
-                    if(listCategory.ContainsKey(doc.CategoryId))
+                var modifiedListDocumentType = listDocumentType
+                    .GroupBy(dt => dt.CategoryId)
+                    .Select(group => new
                     {
-                        string categoryName = listCategory[doc.CategoryId];
-                        return new
+                        Id = db.Categories.Single(id => id.CategoryId == group.Key).Id,
+                        CategoryId = group.Key,
+                        CategoryName = listCategory.ContainsKey(group.Key) ? listCategory[group.Key] : null,
+                        Children = group.Select(dt => new
                         {
-                            doc.Id,
-                            doc.DocumentTypeId,
-                            doc.DocumentTypeName,
-                            CategoryName = categoryName
-                        };
-                    }
-                    return null;
-                }).ToList();
+                            Id=dt.Id,
+                            DocumentTypeId = dt.DocumentTypeId,
+                            DocumentTypeName = dt.DocumentTypeName
+                        }).ToList()
+                    }).ToList();
 
                 return Ok(new
                 {
                     state = "true",
-                    listdcumentType = modifiedListdcumentType,
-                    listCategory
+                    listDocumentType = modifiedListDocumentType
                 });
             }
             catch (Exception ex)

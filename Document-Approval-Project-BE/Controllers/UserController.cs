@@ -7,10 +7,13 @@ using System.Net;
 using System.Web;
 using System.Web.Http;
 using DevOne.Security.Cryptography.BCrypt;
+using System.Web.Http.Cors;
 
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/user")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+
     public class UserController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

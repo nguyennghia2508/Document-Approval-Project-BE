@@ -5,10 +5,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/document-type")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+
     public class DocumentTypeController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

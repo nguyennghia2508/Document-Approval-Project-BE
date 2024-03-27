@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using static Document_Approval_Project_BE.Controllers.DocumentApprovalsController;
@@ -21,6 +22,8 @@ using static Document_Approval_Project_BE.Controllers.DocumentApprovalsControlle
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/documentapproval")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+
     public class DocumentApprovalsController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

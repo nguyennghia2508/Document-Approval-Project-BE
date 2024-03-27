@@ -11,10 +11,13 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
+
 
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/department")]
+    [EnableCors(origins:"*",headers:"*",methods:"*")]
     public class DepartmentController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

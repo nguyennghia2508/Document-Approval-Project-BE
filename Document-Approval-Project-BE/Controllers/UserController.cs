@@ -91,5 +91,22 @@ namespace Document_Approval_Project_BE.Controllers
 
             });
         }
+
+        [HttpGet]
+        [Route("all")]
+        public IHttpActionResult GetALlUser()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var listUser = db.Users.ToList();
+            return Ok(new
+            {
+                state = "true",
+                listUser
+            });
+        }
     }
 }

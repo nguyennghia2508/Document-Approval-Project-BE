@@ -11,7 +11,7 @@ namespace Document_Approval_Project_BE.Models
     {
         [Key]
         public int Id { get; set; }
-        public Guid ApprovalPersonId { get; set; } = Guid.NewGuid();
+        public int ApprovalPersonId { get; set; }
         public string ApprovalPersonName { get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public int PersonDuty {  get; set; }

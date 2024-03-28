@@ -18,6 +18,7 @@ using System.Web.Http.Cors;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using static Document_Approval_Project_BE.Controllers.DocumentApprovalsController;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Document_Approval_Project_BE.Controllers
 {
@@ -49,8 +50,6 @@ namespace Document_Approval_Project_BE.Controllers
             try
             {
                 var httpRequest = currentContext.Request;
-                //var provider = new MultipartMemoryStreamProvider();
-                //await Request.Content.ReadAsMultipartAsync(provider);
 
                 dynamic body = JsonConvert.DeserializeObject(httpRequest.Form["Data"]);
 
@@ -58,17 +57,19 @@ namespace Document_Approval_Project_BE.Controllers
 
                 DocumentApproval dcument = new DocumentApproval
                 {
-                    ApplicantId = body.ApplicantId != null ? Guid.Parse(body.ApplicantId.ToString()) : Guid.Empty,
+                    ApplicantId = body.ApplicantId != null ? body.ApplicantId : 0,
                     ApplicantName = body.ApplicantName,
-                    DepartmentId = body.DepartmentId != null ? Guid.Parse(body.DepartmentId.ToString()) : Guid.Empty,
-                    SectionId = body.SectionId != null ? Guid.Parse(body.SectionId.ToString()) : Guid.Empty,
-                    UnitId = body.UnitId != null ? Guid.Parse(body.UnitId.ToString()) : Guid.Empty,
-                    CategoryId = body.CategoryId != null ? Guid.Parse(body.CategoryId.ToString()) : Guid.Empty,
-                    DocumentTypeId = body.DocumentTypeId != null ? Guid.Parse(body.DocumentTypeId.ToString()) : Guid.Empty,
+                    DepartmentId = body.DepartmentId ?? body.DepartmentId,
+                    SectionId = body.SectionId ?? body.SectionId,
+                    UnitId = body.UnitId ?? body.UnitId,
+                    CategoryId = body.CategoryId ?? body.CategoryId,
+                    DocumentTypeId = body.DocumentTypeId ?? body.DocumentTypeId ,
                     RelatedProposal = body.RelatedProposal,
                     Subject = body.Subject,
                     ContentSum = body.ContentSum,
-                    //CreateDate = body.CreateDate ?? DateTime.Now.ToString("dd/MM/yyyy"),
+                    CreateDate = body.CreateDate ?? DateTime.Now.ToString("dd/MM/yyyy"),
+                    Status = 1,
+                    PresentApplicant = body.ApplicantId != null ? body.ApplicantId : 0
                 };
 
                 db.DocumentApprovals.Add(dcument);
@@ -77,7 +78,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                 Dictionary<string, List<ApprovalPerson>> listPerson = new Dictionary<string, List<ApprovalPerson>>();
 
-                string[] keysToCheck = { "approvers", "reference" };
+                string[] keysToCheck = { "approvers", "signers" };
 
                 foreach (var key in keysToCheck)
                 {
@@ -90,6 +91,7 @@ namespace Document_Approval_Project_BE.Controllers
                         {
                             ApprovalPerson aP = new ApprovalPerson
                             {
+                                ApprovalPersonId = ((int)item["ApprovalPersonId"]),
                                 ApprovalPersonName = item["ApprovalPersonName"].ToString(),
                                 DocumentApprovalId = dcument.DocumentApprovalId,
                                 PersonDuty = key == "approvers" ? 1 : 2
@@ -111,40 +113,35 @@ namespace Document_Approval_Project_BE.Controllers
                             HttpPostedFile fileUpload = files[i];
                             FileInfo fileInfo = new FileInfo(fileUpload.FileName);
 
-                            // Lấy đường dẫn cho thư mục lưu trữ
                             string Filepath = GetFilePath(dcument.Subject + '-' + dcument.ApplicantId);
 
-                            // Tạo thư mục nếu chưa tồn tại
                             if (!Directory.Exists(Filepath))
                             {
                                 Directory.CreateDirectory(Filepath);
                             }
 
-                            // Tạo đường dẫn đầy đủ cho tệp tin
                             string fullPath = Path.Combine(Filepath, fileUpload.FileName);
 
-                            // Lưu tệp tin vào thư mục
                             using (var stream = new FileStream(fullPath, FileMode.Create))
                             {
                                 await fileUpload.InputStream.CopyToAsync(stream);
                             }
 
-                            // Tạo object fileApproval
                             var fileApproval = new
                             {
                                 fileUpload.FileName,
-                                FilePath = fullPath, // Sử dụng đường dẫn đầy đủ
+                                FilePath = fullPath,
                                 FileSize = fileUpload.ContentLength,
                                 FileType = fileUpload.ContentType,
                                 dcument.DocumentApprovalId,
-                                DocumentType = files.GetKey(i).Equals("approvers") ? 1 : 2,
+                                DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
                             };
 
                             fileApprovals.Add(fileApproval);
                             db.DocumentApprovalFiles.Add(new DocumentApprovalFile
                             {
                                 FileName = fileApproval.FileName,
-                                FileSize =  fileApproval.FileSize,
+                                FileSize = fileApproval.FileSize,
                                 FilePath = fileApproval.FilePath,
                                 FileType = fileApproval.FileType,
                                 DocumentApprovalId = fileApproval.DocumentApprovalId,
@@ -161,7 +158,7 @@ namespace Document_Approval_Project_BE.Controllers
                         state = "true",
                         msg = dcument,
                         files = fileApprovals,
-                        ap = listPerson
+                        ap = listPerson,
                     });
                 }
 
@@ -171,7 +168,7 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     state = "true",
                     dc = dcument,
-                    ap = listPerson
+                    ap = listPerson,
                 });
             }
             catch (Exception ex)
@@ -181,14 +178,44 @@ namespace Document_Approval_Project_BE.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
-        public async Task<IHttpActionResult> GetAllDocument()
+        [Route("page/{page}")]
+        public async Task<IHttpActionResult> GetAllDocument(int page)
         {
-            var listDocument = db.DocumentApprovals.ToList();
+            int limit = 10;
+            int skip = (page - 1) * limit;
+
+            var dcapproval = db.DocumentApprovals
+                                .OrderByDescending(d => d.CreateDate)
+                                .Skip(skip)
+                                .Take(limit)
+                                .ToList();
+            var listDcapproval = dcapproval
+            .Select((d, index) => new
+            {
+                key = index+1,
+                d.Id,
+                d.DocumentApprovalId,
+                d.ApplicantId,
+                createBy = d.ApplicantName,
+                categories = db.Categories.Single(item => item.Id == d.CategoryId).CategoryName,
+                createDate = d.CreateDate.ToString("dd/MM/yyyy"),
+                department = db.Departments.Single(item => item.Id == d.DepartmentId).DepartmentName,
+                section = db.Departments.Single(item => item.Id == d.SectionId).DepartmentName,
+                unit = db.Departments.Single(item => item.Id == d.UnitId).DepartmentName,
+                documentType = db.DocumentTypes.Single(item => item.Id == d.DocumentTypeId).DocumentTypeName,
+                Processing = db.Users.Single(item => item.Id == d.PresentApplicant).Username,
+                d.RelatedProposal,
+                d.Status,
+                subject = d.Subject,
+            })
+            .ToList();
+
+
             return Ok(new
             {
                 state = "true",
-                listDocument
+                listDcapproval,
+                totalItems = db.DocumentApprovals.ToList().Count
             });
         }
 

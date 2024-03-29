@@ -89,7 +89,7 @@ namespace Document_Approval_Project_BE.Models
                 {
                     new Claim("Id", userId.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(10), // Token expires in 24 hours
+                Expires = DateTime.UtcNow.AddHours(24), // Token expires in 24 hours
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

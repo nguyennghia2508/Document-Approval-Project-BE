@@ -169,9 +169,6 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.BCrypt.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.Kernel32.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.Windows.Core.xml
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv1.resources
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\JWT.dll
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Bcl.AsyncInterfaces.dll
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Abstractions.dll
@@ -191,3 +188,8 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microso
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.IdentityModel.Tokens.Jwt.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Text.Json.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.ValueTuple.xml
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv1.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv3.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv4.resources

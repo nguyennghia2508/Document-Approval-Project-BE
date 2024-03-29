@@ -11,12 +11,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.UI.WebControls;
+using System.Web.WebPages;
 using System.Xml.Linq;
 using static Document_Approval_Project_BE.Controllers.DocumentApprovalsController;
 using static System.Collections.Specialized.BitVector32;
@@ -52,26 +55,36 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 var httpRequest = currentContext.Request;
 
-                dynamic body = JsonConvert.DeserializeObject(httpRequest.Form["Data"]);
+                var bodyJson = httpRequest.Form["Data"];
+                var body = JsonConvert.DeserializeObject<DocumentApproval>(bodyJson);
 
                 var files = httpRequest.Files;
-
-                DocumentApproval dcument = new DocumentApproval
+                DocumentApproval dcument = new DocumentApproval();
+                if (body != null)
                 {
-                    ApplicantId = body.ApplicantId != null ? body.ApplicantId : 0,
-                    ApplicantName = body.ApplicantName,
-                    DepartmentId = body.DepartmentId ?? body.DepartmentId,
-                    SectionId = body.SectionId ?? body.SectionId,
-                    UnitId = body.UnitId ?? body.UnitId,
-                    CategoryId = body.CategoryId ?? body.CategoryId,
-                    DocumentTypeId = body.DocumentTypeId ?? body.DocumentTypeId ,
-                    RelatedProposal = body.RelatedProposal,
-                    Subject = body.Subject,
-                    ContentSum = body.ContentSum,
-                    CreateDate = body.CreateDate ?? DateTime.Now.ToString("dd/MM/yyyy"),
-                    Status = 1,
-                    PresentApplicant = body.ApplicantId != null ? body.ApplicantId : 0
-                };
+                    dcument = new DocumentApproval
+                    {
+                        ApplicantId = body.ApplicantId,
+                        ApplicantName = body.ApplicantName,
+                        DepartmentId = body.DepartmentId,
+                        DepartmentName = db.Departments.SingleOrDefault(item => item.Id == body.DepartmentId)?.DepartmentName,
+                        SectionId = body.SectionId,
+                        SectionName = db.Departments.SingleOrDefault(item => item.Id == body.SectionId)?.DepartmentName,
+                        UnitId = body.UnitId,
+                        UnitName = db.Departments.SingleOrDefault(item => item.Id == body.UnitId)?.DepartmentName,
+                        CategoryId = body.CategoryId,
+                        CategoryName = db.Categories.SingleOrDefault(item => item.Id == body.CategoryId)?.CategoryName,
+                        DocumentTypeId = body.DocumentTypeId,
+                        DocumentTypeName = db.DocumentTypes.SingleOrDefault(item => item.Id == body.DocumentTypeId)?.DocumentTypeName,
+                        RelatedProposal = body.RelatedProposal,
+                        Subject = body.Subject,
+                        ContentSum = body.ContentSum,
+                        CreateDate = body.CreateDate,
+                        Status = 1,
+                        ProcessingBy = body.ApplicantName,
+                        IsProcessing = true
+                    };
+                }
 
                 db.DocumentApprovals.Add(dcument);
 
@@ -178,50 +191,93 @@ namespace Document_Approval_Project_BE.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("page/{page}")]
         public async Task<IHttpActionResult> GetAllDocument(int page)
         {
             int limit = 10;
             int skip = (page - 1) * limit;
 
-            var dcapproval = await db.DocumentApprovals
-                                .OrderByDescending(d => d.CreateDate)
-                                .Skip(skip)
-                                .Take(limit)
-                                .ToListAsync();
+            var rawMessage = await Request.Content.ReadAsStringAsync();
+            var data = JObject.Parse(rawMessage);
+            var tabName = data["tabName"].ToString();
+            var UserId = (int?)data["userId"];
+            IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate);
+            int totalItems = await db.DocumentApprovals.CountAsync();
 
-            var listDcapproval = dcapproval
-            .Select((d, index) => new
+            if (!tabName.IsEmpty() && !tabName.Equals("all"))
+            {
+                if(tabName.Equals("sendToMe"))
+                {
+                    var userDocumentApprovalIds = db.ApprovalPersons
+                    .Where(ap => ap.ApprovalPersonId == UserId)
+                    .Select(ap => ap.DocumentApprovalId)
+                    .ToList();
+                    query = query.Where(item => userDocumentApprovalIds.Contains(item.DocumentApprovalId));
+                    totalItems = await query.CountAsync();
+                }
+                if (tabName.Equals("sendByMe"))
+                {
+                    query = query.Where(item => item.ApplicantId == UserId);
+                    totalItems = await query.CountAsync();
+                }
+                if (tabName.Equals("shareWithMe"))
+                {
+                    query = query.Where(item => item.SharingToUsers == UserId);
+                    totalItems = await query.CountAsync();
+                }
+
+                Regex regex = new Regex(@"status(\d+)");
+
+                Match match = regex.Match(tabName);
+
+                string numberStr = match.Groups[1].Value;
+                if (tabName.Equals("status" + numberStr))
+                {
+                    query = query.Where(item => item.Status.ToString() == numberStr);
+                    totalItems = await query.CountAsync();
+                }
+            }
+
+            var dcapproval = query.Skip(skip).Take(limit).ToList();
+
+            if (dcapproval.Count == 0)
+            {
+                return Ok(new
+                {
+                    state = "false",
+                    listDcapproval = new List<object>(),
+                });
+            }
+
+            var listDcapproval = dcapproval.Select((d, index) => new
             {
                 key = index + 1,
                 d.Id,
                 d.DocumentApprovalId,
                 d.ApplicantId,
                 createBy = d.ApplicantName,
-                categories = db.Categories.Single(item => item.Id == d.CategoryId).CategoryName,
+                categories = d.CategoryName,
                 createDate = d.CreateDate.ToString("dd/MM/yyyy"),
-                department = db.Departments.Single(item => item.Id == d.DepartmentId).DepartmentName,
-                section = db.Departments.Single(item => item.Id == d.SectionId).DepartmentName,
-                unit = db.Departments.Single(item => item.Id == d.UnitId).DepartmentName,
-                documentType = db.DocumentTypes.Single(item => item.Id == d.DocumentTypeId).DocumentTypeName,
-                Processing = db.Users.Single(item => item.Id == d.PresentApplicant).Username,
+                department = d.DepartmentName,
+                section = d.DepartmentName,
+                unit = d.DepartmentName,
+                documentType = d.DocumentTypeName,
+                Processing = d.ProcessingBy,
+                d.IsProcessing,
                 d.RelatedProposal,
                 d.Status,
                 subject = d.Subject,
-            })
-            .ToList();
-
-            var totalItems = await db.DocumentApprovals.CountAsync();
+            }).ToList();
 
             return Ok(new
             {
                 state = "true",
                 listDcapproval,
-                totalItems
+                totalItems,
+                tabName,
+                UserId
             });
         }
-
-
     }
 }

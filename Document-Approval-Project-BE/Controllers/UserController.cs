@@ -16,6 +16,9 @@ namespace Document_Approval_Project_BE.Controllers
     public class UserController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
+        private readonly Authentication auth = new Authentication();
+        private System.Web.HttpContext currentContext = System.Web.HttpContext.Current;
+
         // GET: api/user/{email}
         [HttpPost]
         [Route("register")]
@@ -66,30 +69,52 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var userInfo = db.Users.SingleOrDefault(p => p.Email == user.Email);
-            if (userInfo == null)
+
+            var userInfor = db.Users.SingleOrDefault(p => p.Email == user.Email);
+            if (userInfor == null)
             {
                 return Ok(new
                 {
                     state = "false",
                     msg = "Invalid email or password"
-
                 });
             }
-            if(BCryptHelper.CheckPassword(user.Password,userInfo.Password))
+
+            // Kiểm tra mật khẩu
+            if (BCryptHelper.CheckPassword(user.Password, userInfor.Password))
             {
+                // Tạo token và trả về thông tin người dùng và token
+                var token = auth.GenerateToken(userInfor.UserId);
+                var getUserInfor = new User
+                {
+                    Id = userInfor.Id,
+                    UserId = userInfor.UserId,
+                    Username = userInfor.Username,
+                    Email = userInfor.Email,
+                    FirstName = userInfor.FirstName,
+                    LastName = userInfor.LastName,
+                    Birtday = userInfor.Birtday,
+                    Position = userInfor.Position,
+                    Gender = userInfor.Gender,
+                    JobTitle = userInfor.JobTitle,
+                    Company = userInfor.Company,
+                    DepartmentId = userInfor.DepartmentId
+                };
                 return Ok(new
                 {
                     state = "true",
-                    userInfor = userInfo
+                    user = getUserInfor,
+                    token
                 });
             }
-            return Ok(new
+            else
             {
-                state = "false",
-                msg = "Invalid email or password"
-
-            });
+                return Ok(new
+                {
+                    state = "false",
+                    msg = "Invalid email or password"
+                });
+            }
         }
 
         [HttpGet]
@@ -107,6 +132,28 @@ namespace Document_Approval_Project_BE.Controllers
                 state = "true",
                 listUser
             });
+        }
+
+        [HttpPost]
+        [Route("verify-token")]
+        public IHttpActionResult VerifyToken()
+        {
+            var verifyUser = auth.VerifyToken(currentContext.Request);
+            if (verifyUser != null)
+            {
+                return Ok(new
+                {
+                    verify = true,
+                    user = verifyUser
+                });
+            }
+            var response = new
+            {
+                verify = false,
+                message = "Unauthorized user"
+            };
+            return Content(System.Net.HttpStatusCode.Unauthorized, response);
+
         }
     }
 }

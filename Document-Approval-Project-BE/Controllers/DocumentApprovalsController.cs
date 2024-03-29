@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -184,15 +185,16 @@ namespace Document_Approval_Project_BE.Controllers
             int limit = 10;
             int skip = (page - 1) * limit;
 
-            var dcapproval = db.DocumentApprovals
+            var dcapproval = await db.DocumentApprovals
                                 .OrderByDescending(d => d.CreateDate)
                                 .Skip(skip)
                                 .Take(limit)
-                                .ToList();
+                                .ToListAsync();
+
             var listDcapproval = dcapproval
             .Select((d, index) => new
             {
-                key = index+1,
+                key = index + 1,
                 d.Id,
                 d.DocumentApprovalId,
                 d.ApplicantId,
@@ -210,14 +212,16 @@ namespace Document_Approval_Project_BE.Controllers
             })
             .ToList();
 
+            var totalItems = await db.DocumentApprovals.CountAsync();
 
             return Ok(new
             {
                 state = "true",
                 listDcapproval,
-                totalItems = db.DocumentApprovals.ToList().Count
+                totalItems
             });
         }
+
 
     }
 }

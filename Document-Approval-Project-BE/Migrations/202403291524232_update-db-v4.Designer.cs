@@ -7,13 +7,13 @@ namespace Document_Approval_Project_BE.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class updatedbv2 : IMigrationMetadata
+    public sealed partial class updatedbv4 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(updatedbv2));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(updatedbv4));
         
         string IMigrationMetadata.Id
         {
-            get { return "202403280641181_update-db-v2"; }
+            get { return "202403291524232_update-db-v4"; }
         }
         
         string IMigrationMetadata.Source

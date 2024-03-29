@@ -70,7 +70,7 @@ namespace Document_Approval_Project_BE.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userInfor = db.Users.SingleOrDefault(p => p.Email == user.Email);
+            var userInfor = db.Users.Single(p => p.Email == user.Email);
             if (userInfor == null)
             {
                 return Ok(new
@@ -85,20 +85,20 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 // Tạo token và trả về thông tin người dùng và token
                 var token = auth.GenerateToken(userInfor.UserId);
-                var getUserInfor = new User
+                var getUserInfor = new
                 {
-                    Id = userInfor.Id,
-                    UserId = userInfor.UserId,
-                    Username = userInfor.Username,
-                    Email = userInfor.Email,
-                    FirstName = userInfor.FirstName,
-                    LastName = userInfor.LastName,
-                    Birtday = userInfor.Birtday,
-                    Position = userInfor.Position,
-                    Gender = userInfor.Gender,
-                    JobTitle = userInfor.JobTitle,
-                    Company = userInfor.Company,
-                    DepartmentId = userInfor.DepartmentId
+                    userInfor.Id,
+                    userInfor.UserId,
+                    userInfor.Username,
+                    userInfor.Email,
+                    userInfor.FirstName,
+                    userInfor.LastName,
+                    userInfor.Birtday,
+                    userInfor.Position,
+                    userInfor.Gender,
+                    userInfor.JobTitle,
+                    userInfor.Company,
+                    userInfor.DepartmentId
                 };
                 return Ok(new
                 {
@@ -112,7 +112,8 @@ namespace Document_Approval_Project_BE.Controllers
                 return Ok(new
                 {
                     state = "false",
-                    msg = "Invalid email or password"
+                    msg = "Invalid email or password",
+                    user
                 });
             }
         }
@@ -139,12 +140,28 @@ namespace Document_Approval_Project_BE.Controllers
         public IHttpActionResult VerifyToken()
         {
             var verifyUser = auth.VerifyToken(currentContext.Request);
+            var getUserInfor = new
+            {
+                verifyUser.Id,
+                verifyUser.UserId,
+                verifyUser.Username,
+                verifyUser.Email,
+                verifyUser.FirstName,
+                verifyUser.LastName,
+                verifyUser.Birtday,
+                verifyUser.Position,
+                verifyUser.Gender,
+                verifyUser.JobTitle,
+                verifyUser.Company,
+                verifyUser.DepartmentId
+            };
+
             if (verifyUser != null)
             {
                 return Ok(new
                 {
                     verify = true,
-                    user = verifyUser
+                    user = getUserInfor
                 });
             }
             var response = new

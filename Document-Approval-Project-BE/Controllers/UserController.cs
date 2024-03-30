@@ -93,7 +93,7 @@ namespace Document_Approval_Project_BE.Controllers
                     userInfor.Email,
                     userInfor.FirstName,
                     userInfor.LastName,
-                    userInfor.Birtday,
+                    userInfor.Birthday,
                     userInfor.Position,
                     userInfor.Gender,
                     userInfor.JobTitle,
@@ -140,37 +140,41 @@ namespace Document_Approval_Project_BE.Controllers
         public IHttpActionResult VerifyToken()
         {
             var verifyUser = auth.VerifyToken(currentContext.Request);
-            var getUserInfor = new
-            {
-                verifyUser.Id,
-                verifyUser.UserId,
-                verifyUser.Username,
-                verifyUser.Email,
-                verifyUser.FirstName,
-                verifyUser.LastName,
-                verifyUser.Birtday,
-                verifyUser.Position,
-                verifyUser.Gender,
-                verifyUser.JobTitle,
-                verifyUser.Company,
-                verifyUser.DepartmentId
-            };
 
             if (verifyUser != null)
             {
+                var getUserInfor = new
+                {
+                    verifyUser.Id,
+                    verifyUser.UserId,
+                    verifyUser.Username,
+                    verifyUser.Email,
+                    verifyUser.FirstName,
+                    verifyUser.LastName,
+                    verifyUser.Birthday,
+                    verifyUser.Position,
+                    verifyUser.Gender,
+                    verifyUser.JobTitle,
+                    verifyUser.Company,
+                    verifyUser.DepartmentId
+                };
+
                 return Ok(new
                 {
                     verify = true,
                     user = getUserInfor
                 });
             }
-            var response = new
+            else
             {
-                verify = false,
-                message = "Unauthorized user"
-            };
-            return Content(System.Net.HttpStatusCode.Unauthorized, response);
-
+                var response = new
+                {
+                    verify = false,
+                    message = "Unauthorized user"
+                };
+                return Content(System.Net.HttpStatusCode.Unauthorized, response);
+            }
         }
+
     }
 }

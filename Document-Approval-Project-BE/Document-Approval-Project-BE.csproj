@@ -343,6 +343,10 @@
     <Compile Include="Migrations\202403291524232_update-db-v4.Designer.cs">
       <DependentUpon>202403291524232_update-db-v4.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403301636010_update-db-v5.cs" />
+    <Compile Include="Migrations\202403301636010_update-db-v5.Designer.cs">
+      <DependentUpon>202403301636010_update-db-v5.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApprovalPerson.cs" />
     <Compile Include="Models\Authentication.cs" />
@@ -510,6 +514,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403291524232_update-db-v4.resx">
       <DependentUpon>202403291524232_update-db-v4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403301636010_update-db-v5.resx">
+      <DependentUpon>202403301636010_update-db-v5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

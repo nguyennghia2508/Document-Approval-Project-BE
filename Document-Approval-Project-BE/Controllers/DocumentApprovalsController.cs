@@ -170,7 +170,7 @@ namespace Document_Approval_Project_BE.Controllers
                     return Ok(new
                     {
                         state = "true",
-                        msg = dcument,
+                        dc = dcument,
                         files = fileApprovals,
                         ap = listPerson,
                     });

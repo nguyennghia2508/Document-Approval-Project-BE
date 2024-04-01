@@ -87,6 +87,10 @@ namespace Document_Approval_Project_BE.Controllers
                 }
 
                 db.DocumentApprovals.Add(dcument);
+                db.SaveChanges();
+
+                dcument.RequestCode = $"{dcument.Id}-IDOC-AVN-{DateTime.Now.Year}";
+                db.SaveChanges();
 
                 var approvalPerson = JObject.Parse(httpRequest.Form["ApprovalPerson"]);
 
@@ -207,7 +211,7 @@ namespace Document_Approval_Project_BE.Controllers
 
             if (!tabName.IsEmpty() && !tabName.Equals("all"))
             {
-                if(tabName.Equals("sendToMe"))
+                if (tabName.Equals("sendToMe"))
                 {
                     var userDocumentApprovalIds = db.ApprovalPersons
                     .Where(ap => ap.ApprovalPersonId == UserId)
@@ -254,6 +258,7 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 key = index + 1,
                 d.Id,
+                d.RequestCode,
                 d.DocumentApprovalId,
                 d.ApplicantId,
                 createBy = d.ApplicantName,
@@ -277,6 +282,16 @@ namespace Document_Approval_Project_BE.Controllers
                 totalItems,
                 tabName,
                 UserId
+            });
+        }
+
+        [HttpPost]
+        [Route("filter")]
+        public async Task<IHttpActionResult> GetFilterDocument(int page)
+        {
+            return Ok(new
+            {
+                state = "true",
             });
         }
     }

@@ -3,6 +3,7 @@
   "WorkspaceRootPath": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\",
   "Documents": [
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\documenttypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\documenttypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -12,17 +13,29 @@
     {
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|g:\\workspace\\document-approval-project-be\\document-approval-project-be\\.vs\\document-approval-project-be.csproj.dtbcache.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:.vs\\document-approval-project-be.csproj.dtbcache.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|g:\\workspace\\document-approval-project-be\\document-approval-project-be\\migrations\\202404010514188_db-v1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:migrations\\202404010514188_db-v1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
     },
     {
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|g:\\workspace\\document-approval-project-be\\document-approval-project-be\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|g:\\workspace\\document-approval-project-be\\document-approval-project-be\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|g:\\workspace\\document-approval-project-be\\document-approval-project-be\\controllers\\documentapprovalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+=======
+      "AbsoluteMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\controllers\\documentapprovalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+>>>>>>> Stashed changes
       "RelativeMoniker": "D:0:0:{1422A1F1-BF15-48BF-8506-5792C50D393F}|Document-Approval-Project-BE.csproj|solutionrelative:controllers\\documentapprovalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -48,22 +61,61 @@
           "SelectedChildIndex": 6,
           "Children": [
             {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "202404010514188_db-v1.cs",
+              "DocumentMoniker": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\202404010514188_db-v1.cs",
+              "RelativeDocumentMoniker": "Migrations\\202404010514188_db-v1.cs",
+              "ToolTip": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Migrations\\202404010514188_db-v1.cs",
+              "RelativeToolTip": "Migrations\\202404010514188_db-v1.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-01T05:14:23.713Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Document-Approval-Project-BE.csproj.dtbcache.json",
+              "DocumentMoniker": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\.vs\\Document-Approval-Project-BE.csproj.dtbcache.json",
+              "RelativeDocumentMoniker": ".vs\\Document-Approval-Project-BE.csproj.dtbcache.json",
+              "ToolTip": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\.vs\\Document-Approval-Project-BE.csproj.dtbcache.json",
+              "RelativeToolTip": ".vs\\Document-Approval-Project-BE.csproj.dtbcache.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAABWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-04-01T05:13:01.21Z",
+              "EditorCaption": ""
+            },
+            {
               "$type": "Bookmark",
               "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
             },
             {
               "$type": "Document",
+<<<<<<< Updated upstream
               "DocumentIndex": 1,
               "Title": "dbo.Categories [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/DESKTOP_A6MMDTC/ProjectDB/True/SqlTable/dbo.Categories.sql",
               "ToolTip": "dbo.Categories [Data]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
               "WhenOpened": "2024-03-27T02:16:53.609Z",
+=======
+              "DocumentIndex": 2,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AQIAAKMAAAAAAAAAAAAkwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-30T18:05:14.773Z",
+>>>>>>> Stashed changes
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+<<<<<<< Updated upstream
               "Title": "UserController.cs",
               "DocumentMoniker": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "Controllers\\UserController.cs",
@@ -163,6 +215,17 @@
               "ViewState": "AQIAAAkAAAAAAAAAAAAqwBIAAAAoAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-25T07:23:02.711Z"
+=======
+              "Title": "DocumentApprovalsController.cs",
+              "DocumentMoniker": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentApprovalsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DocumentApprovalsController.cs",
+              "ToolTip": "G:\\WorkSpace\\Document-Approval-Project-BE\\Document-Approval-Project-BE\\Controllers\\DocumentApprovalsController.cs",
+              "RelativeToolTip": "Controllers\\DocumentApprovalsController.cs",
+              "ViewState": "AQIAAKMAAAAAAAAAAAAAALAAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-29T15:20:49.103Z",
+              "EditorCaption": ""
+>>>>>>> Stashed changes
             }
           ]
         }

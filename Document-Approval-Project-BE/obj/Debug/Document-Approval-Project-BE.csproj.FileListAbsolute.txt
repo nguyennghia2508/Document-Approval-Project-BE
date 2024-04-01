@@ -171,10 +171,17 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.Windows.Core.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv1.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache
+<<<<<<< Updated upstream
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.AssemblyReference.cache
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.pdb
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Document-Approval-Project-BE.dll.config
+=======
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv3.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv4.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv5.resources
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Document-Approval-Project-BE.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Document-Approval-Project-BE.pdb
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\roslyn\csc.exe
@@ -230,6 +237,10 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Antlr
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\DevOne.Security.Cryptography.BCrypt.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\EntityFramework.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\EntityFramework.SqlServer.dll
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\JWT.dll
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authentication.Abstractions.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authentication.Core.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authorization.dll
@@ -246,6 +257,10 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Micro
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Routing.Abstractions.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Routing.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.WebUtilities.dll
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Bcl.AsyncInterfaces.dll
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.DotNet.PlatformAbstractions.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Configuration.Abstractions.dll
@@ -258,6 +273,13 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Micro
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.ObjectPool.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Options.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Primitives.dll
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Abstractions.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.JsonWebTokens.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Logging.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Tokens.dll
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Net.Http.Headers.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Web.Infrastructure.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Newtonsoft.Json.Bson.dll
@@ -268,12 +290,22 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvo
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Buffers.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.ComponentModel.Annotations.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Diagnostics.DiagnosticSource.dll
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.IdentityModel.Tokens.Jwt.dll
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Memory.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Net.Http.Formatting.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Numerics.Vectors.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Runtime.CompilerServices.Unsafe.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Text.Encodings.Web.dll
+<<<<<<< Updated upstream
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Threading.Tasks.Extensions.dll
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Text.Json.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Threading.Tasks.Extensions.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.ValueTuple.dll
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Cors.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Helpers.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Http.Cors.dll
@@ -288,6 +320,11 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Syste
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\WebGrease.dll
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\EntityFramework.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\EntityFramework.SqlServer.xml
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\JWT.pdb
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\JWT.xml
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authentication.Abstractions.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authentication.Core.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Authorization.xml
@@ -304,6 +341,10 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Micro
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Routing.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.Routing.Abstractions.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.AspNetCore.WebUtilities.xml
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Bcl.AsyncInterfaces.xml
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Configuration.Abstractions.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.DependencyInjection.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.DependencyInjection.Abstractions.xml
@@ -313,6 +354,13 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Micro
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.ObjectPool.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Options.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Extensions.Primitives.xml
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Abstractions.xml
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.JsonWebTokens.xml
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Logging.xml
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.IdentityModel.Tokens.xml
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.Net.Http.Headers.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Newtonsoft.Json.Bson.pdb
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Newtonsoft.Json.Bson.xml
@@ -321,12 +369,22 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvo
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\PInvoke.Windows.Core.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Buffers.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Diagnostics.DiagnosticSource.xml
+<<<<<<< Updated upstream
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.IdentityModel.Tokens.Jwt.xml
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Memory.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Net.Http.Formatting.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Numerics.Vectors.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Runtime.CompilerServices.Unsafe.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Text.Encodings.Web.xml
+<<<<<<< Updated upstream
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Threading.Tasks.Extensions.xml
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Text.Json.xml
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Threading.Tasks.Extensions.xml
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.ValueTuple.xml
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Helpers.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Http.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Http.Cors.xml
@@ -340,7 +398,16 @@ G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Newto
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.Web.Optimization.xml
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Antlr3.Runtime.pdb
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+<<<<<<< Updated upstream
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.CoreCompileInputs.cache
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document.1E3D5D29.Up2Date
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.UPDATEDB.resources
+=======
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.AssemblyReference.cache
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.CoreCompileInputs.cache
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document.1E3D5D29.Up2Date
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.dll
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.pdb
+G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.dbv1.resources
+>>>>>>> Stashed changes
 G:\WorkSpace\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache

@@ -1,8 +1,14 @@
 {
   "ExpandedNodes": [
+<<<<<<< Updated upstream
     "",
     "\\Document-Approval-Project-BE"
   ],
   "SelectedNode": "\\Document-Approval-Project-BE\\Web.config",
+=======
+    ""
+  ],
+  "SelectedNode": "\\Document-Approval-Project-BE.sln",
+>>>>>>> Stashed changes
   "PreviewInSolutionExplorer": false
 }

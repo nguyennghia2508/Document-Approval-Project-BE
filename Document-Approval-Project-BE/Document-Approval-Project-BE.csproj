@@ -300,9 +300,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+<<<<<<< Updated upstream
     <Compile Include="Migrations\202403250722062_UPDATE-DB.cs" />
     <Compile Include="Migrations\202403250722062_UPDATE-DB.Designer.cs">
       <DependentUpon>202403250722062_UPDATE-DB.cs</DependentUpon>
+=======
+    <Compile Include="Migrations\202404010514188_db-v1.cs" />
+    <Compile Include="Migrations\202404010514188_db-v1.Designer.cs">
+      <DependentUpon>202404010514188_db-v1.cs</DependentUpon>
+>>>>>>> Stashed changes
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApprovalPerson.cs" />
@@ -368,13 +374,6 @@
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
     <Content Include="Views\Web.config" />
@@ -459,8 +458,13 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
     <EmbeddedResource Include="Migrations\202403250722062_UPDATE-DB.resx">
       <DependentUpon>202403250722062_UPDATE-DB.cs</DependentUpon>
+=======
+    <EmbeddedResource Include="Migrations\202404010514188_db-v1.resx">
+      <DependentUpon>202404010514188_db-v1.cs</DependentUpon>
+>>>>>>> Stashed changes
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

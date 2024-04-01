@@ -12,6 +12,7 @@ namespace Document_Approval_Project_BE.Models
     {
         [Key]
         public int Id { get; set; }
+        public string RequestCode {  get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.NewGuid();
         public int? ApplicantId { get; set; }
         public string ApplicantName {  get; set; }

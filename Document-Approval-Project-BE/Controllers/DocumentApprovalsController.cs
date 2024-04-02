@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -206,8 +207,100 @@ namespace Document_Approval_Project_BE.Controllers
             var data = JObject.Parse(rawMessage);
             var tabName = data["tabName"].ToString();
             var UserId = (int?)data["userId"];
+
+            var listFilter = data["dataFilter"];
+
             IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate);
             int totalItems = await db.DocumentApprovals.CountAsync();
+
+            if (listFilter != null && listFilter.HasValues)
+            {
+                if (listFilter["requestcode"] != null && !string.IsNullOrEmpty(listFilter["requestcode"].ToString()))
+                {
+                    string requestcode = listFilter["requestcode"].ToString().Trim();
+                    query = query.Where(item => item.RequestCode.Trim().Contains(requestcode));
+                }
+                if (listFilter.SelectToken("documentType") != null && !listFilter["documentType"].ToString().Equals("all"))
+                {
+                    string documentType = listFilter["documentType"].ToString();
+                    if (int.TryParse(documentType, out int documentTypeId))
+                    {
+                        query = query.Where(item => item.DocumentTypeId == documentTypeId);
+                    }
+                }
+                if (listFilter.SelectToken("attorney") != null && !listFilter["attorney"].ToString().Equals("all"))
+                {
+                    string attorney = listFilter["attorney"].ToString();
+                    if (int.TryParse(attorney, out int attorneyId))
+                    {
+                        query = query.Where(item => item.ApplicantId == attorneyId);
+                    }
+                }
+                if (listFilter.SelectToken("authorizer") != null && !listFilter["authorizer"].ToString().Equals("all"))
+                {
+                    string authorizer = listFilter["authorizer"].ToString();
+                    if (int.TryParse(authorizer, out int attorneyId))
+                    {
+                        query = query.Where(item => item.ApplicantId == attorneyId);
+                    }
+                }
+                if (listFilter["subject"] != null && !string.IsNullOrEmpty(listFilter["subject"].ToString()))
+                {
+                    string subject = listFilter["subject"].ToString();
+                    query = query.Where(item => item.Subject.Contains(subject));
+                }
+                if (listFilter["createStart"] != null && listFilter["createEnd"] != null)
+                {
+                    if (DateTime.TryParse(listFilter["createStart"].ToString(), out DateTime createStart)
+                        && DateTime.TryParse(listFilter["createEnd"].ToString(), out DateTime createEnd))
+                    {
+                        createEnd = createEnd.Date.AddDays(1).AddSeconds(-1);
+                        query = query.Where(item => item.CreateDate >= createStart && item.CreateDate <= createEnd);
+                    }
+                }
+                if (!listFilter["department"].Equals("all"))
+                {
+                    string department = listFilter["department"].ToString();
+                    if (int.TryParse(department, out int departmentId))
+                    {
+                        query = query.Where(item => item.DepartmentId == departmentId);
+                        var departmentParenNode = db.Departments.FirstOrDefault(d => d.Id == departmentId);
+                        // Nếu section được chọn
+                        if (listFilter.SelectToken("section") != null && !listFilter["section"].ToString().Equals("all"))
+                        {
+                            string section = listFilter["section"].ToString();
+                            if (int.TryParse(section, out int sectionId))
+                            {
+                                var sectionInDepartment = db.Departments.FirstOrDefault(s => s.ParentNode == departmentParenNode.DepartmentId && s.Id == sectionId);
+                                if (sectionInDepartment != null)
+                                {
+                                    query = query.Where(item => item.SectionId == sectionInDepartment.Id);
+                                    var sectionParenNode = db.Departments.FirstOrDefault(s => s.Id == sectionId);
+
+                                    if (listFilter.SelectToken("unit") != null && !listFilter["unit"].ToString().Equals("all"))
+                                    {
+                                        string unit = listFilter["unit"].ToString();
+
+                                        if (int.TryParse(unit, out int unitId))
+                                        {
+                                            var unitInSection = db.Departments.FirstOrDefault(u => u.ParentNode == sectionParenNode.DepartmentId && u.Id == unitId);
+                                            if (unitInSection != null)
+                                            {
+                                                query = query.Where(item => item.UnitId == unitId);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!listFilter["status"].ToString().Equals("all") && listFilter["status"] != null)
+                {
+                    var status = listFilter["status"].ToString(); 
+                    query = query.Where(item => item.Status.ToString().Equals(status));
+                }
+            }
 
             if (!tabName.IsEmpty() && !tabName.Equals("all"))
             {
@@ -238,7 +331,7 @@ namespace Document_Approval_Project_BE.Controllers
                 string numberStr = match.Groups[1].Value;
                 if (tabName.Equals("status" + numberStr))
                 {
-                    query = query.Where(item => item.Status.ToString() == numberStr);
+                    query = query.Where(item => item.Status.ToString().Equals(numberStr));
                     totalItems = await query.CountAsync();
                 }
             }
@@ -265,8 +358,8 @@ namespace Document_Approval_Project_BE.Controllers
                 categories = d.CategoryName,
                 createDate = d.CreateDate.ToString("dd/MM/yyyy"),
                 department = d.DepartmentName,
-                section = d.DepartmentName,
-                unit = d.DepartmentName,
+                section = d.SectionName,
+                unit = d.UnitName,
                 documentType = d.DocumentTypeName,
                 Processing = d.ProcessingBy,
                 d.IsProcessing,
@@ -281,17 +374,8 @@ namespace Document_Approval_Project_BE.Controllers
                 listDcapproval,
                 totalItems,
                 tabName,
-                UserId
-            });
-        }
-
-        [HttpPost]
-        [Route("filter")]
-        public async Task<IHttpActionResult> GetFilterDocument(int page)
-        {
-            return Ok(new
-            {
-                state = "true",
+                UserId,
+                data
             });
         }
     }

@@ -17,6 +17,7 @@ namespace Document_Approval_Project_BE.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public string CommentContent {  get; set; }
         public string CommentTime { get; set; }
+        public int ParentNode { get; set; }
         public Boolean IsSubComment { get; set; }
 
     }

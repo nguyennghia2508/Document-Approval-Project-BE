@@ -1,4 +1,5 @@
-﻿using Document_Approval_Project_BE.Models;
+﻿using DevOne.Security.Cryptography.BCrypt;
+using Document_Approval_Project_BE.Models;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
@@ -11,6 +12,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
@@ -99,6 +101,9 @@ namespace Document_Approval_Project_BE.Controllers
 
                 string[] keysToCheck = { "approvers", "signers" };
 
+                // Dictionary để lưu trữ số thứ tự của mỗi loại người
+                Dictionary<string, int> indexMap = new Dictionary<string, int>();
+
                 foreach (var key in keysToCheck)
                 {
                     listPerson[key] = new List<ApprovalPerson>();
@@ -106,20 +111,29 @@ namespace Document_Approval_Project_BE.Controllers
 
                     if (items != null)
                     {
+                        // Khởi tạo index cho loại người hiện tại
+                        indexMap[key] = 1;
+
                         foreach (var item in items)
                         {
                             ApprovalPerson aP = new ApprovalPerson
                             {
+                                Index = indexMap[key],
                                 ApprovalPersonId = ((int)item["ApprovalPersonId"]),
                                 ApprovalPersonName = item["ApprovalPersonName"].ToString(),
                                 DocumentApprovalId = dcument.DocumentApprovalId,
-                                PersonDuty = key == "approvers" ? 1 : 2
+                                PersonDuty = key == "approvers" ? 1 : 2,
                             };
+
                             listPerson[key].Add(aP);
                             db.ApprovalPersons.Add(aP);
+
+                            // Tăng index sau mỗi lần lặp
+                            indexMap[key]++;
                         }
                     }
                 }
+
 
                 if (files.Count > 0)
                 {
@@ -132,7 +146,7 @@ namespace Document_Approval_Project_BE.Controllers
                             HttpPostedFile fileUpload = files[i];
                             FileInfo fileInfo = new FileInfo(fileUpload.FileName);
 
-                            string Filepath = GetFilePath(dcument.Subject + '-' + dcument.ApplicantId);
+                            string Filepath = GetFilePath(dcument.DocumentApprovalId.ToString());
 
                             if (!Directory.Exists(Filepath))
                             {
@@ -140,6 +154,8 @@ namespace Document_Approval_Project_BE.Controllers
                             }
 
                             string fullPath = Path.Combine(Filepath, fileUpload.FileName);
+                            string alterPath = "Upload/Files/" + 
+                                dcument.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
 
                             using (var stream = new FileStream(fullPath, FileMode.Create))
                             {
@@ -149,7 +165,7 @@ namespace Document_Approval_Project_BE.Controllers
                             var fileApproval = new
                             {
                                 fileUpload.FileName,
-                                FilePath = fullPath,
+                                FilePath = alterPath,
                                 FileSize = fileUpload.ContentLength,
                                 FileType = fileUpload.ContentType,
                                 dcument.DocumentApprovalId,
@@ -377,6 +393,35 @@ namespace Document_Approval_Project_BE.Controllers
                 UserId,
                 data
             });
+        }
+
+        [HttpGet]
+        [Route("view/{id}")]
+        public IHttpActionResult GetDocumentById(int id)
+        {
+            var document = db.DocumentApprovals.SingleOrDefault(p => p.Id == id);
+            if (document != null)
+            {
+                var files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId);
+                var approvers = db.ApprovalPersons
+                    .Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 1);
+                var signers = db.ApprovalPersons
+                    .Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2);
+                return Ok(new
+                {
+                    state = "true",
+                    document,
+                    files,
+                    approvers,
+                    signers
+                });
+            }
+            var content = new
+            {
+                state = "false",
+                document = new Object()
+            };
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, content));
         }
     }
 }

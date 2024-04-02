@@ -11,9 +11,11 @@ namespace Document_Approval_Project_BE.Models
     {
         [Key]
         public int Id { get; set; }
+        public int Index { get; set; }
         public int ApprovalPersonId { get; set; }
         public string ApprovalPersonName { get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public int PersonDuty {  get; set; }
+        public Boolean IsApproved { get; set; } = false;
     }
 }

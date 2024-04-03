@@ -193,7 +193,3 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\D
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv3.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv4.resources
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv5.resources
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv6.resources
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv7.resources
-D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv8.resources

@@ -84,8 +84,6 @@ namespace Document_Approval_Project_BE.Controllers
                         ContentSum = body.ContentSum,
                         CreateDate = body.CreateDate,
                         Status = 1,
-                        ProcessingBy = body.ApplicantName,
-                        IsProcessing = true
                     };
                 }
 
@@ -123,8 +121,8 @@ namespace Document_Approval_Project_BE.Controllers
                                 ApprovalPersonName = item["ApprovalPersonName"].ToString(),
                                 DocumentApprovalId = dcument.DocumentApprovalId,
                                 PersonDuty = key == "approvers" ? 1 : 2,
+                                IsProcessing = key == "approvers" && indexMap[key] == 1,
                             };
-
                             listPerson[key].Add(aP);
                             db.ApprovalPersons.Add(aP);
 
@@ -132,6 +130,12 @@ namespace Document_Approval_Project_BE.Controllers
                             indexMap[key]++;
                         }
                     }
+                }
+
+                if (listPerson.ContainsKey("approvers") && listPerson["approvers"].Count > 0)
+                {
+                    dcument.ProcessingBy = listPerson["approvers"][0].ApprovalPersonName;
+                    db.SaveChanges();
                 }
 
 
@@ -226,7 +230,9 @@ namespace Document_Approval_Project_BE.Controllers
 
             var listFilter = data["dataFilter"];
 
-            IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate);
+            IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate)
+          .Where(u => db.ApprovalPersons.Any(p => p.DocumentApprovalId == u.DocumentApprovalId && p.ApprovalPersonId == UserId));
+
             int totalItems = await db.DocumentApprovals.CountAsync();
 
             if (listFilter != null && listFilter.HasValues)
@@ -317,6 +323,19 @@ namespace Document_Approval_Project_BE.Controllers
                     query = query.Where(item => item.Status.ToString().Equals(status));
                 }
             }
+            else
+            {
+                Regex regex = new Regex(@"status(\d+)");
+
+                Match match = regex.Match(tabName);
+
+                string numberStr = match.Groups[1].Value;
+                if (tabName.Equals("status" + numberStr))
+                {
+                    query = query.Where(item => item.Status.ToString().Equals(numberStr));
+                    totalItems = await query.CountAsync();
+                }
+            }
 
             if (!tabName.IsEmpty() && !tabName.Equals("all"))
             {
@@ -340,20 +359,19 @@ namespace Document_Approval_Project_BE.Controllers
                     totalItems = await query.CountAsync();
                 }
 
-                Regex regex = new Regex(@"status(\d+)");
+                //Regex regex = new Regex(@"status(\d+)");
 
-                Match match = regex.Match(tabName);
+                //Match match = regex.Match(tabName);
 
-                string numberStr = match.Groups[1].Value;
-                if (tabName.Equals("status" + numberStr))
-                {
-                    query = query.Where(item => item.Status.ToString().Equals(numberStr));
-                    totalItems = await query.CountAsync();
-                }
+                //string numberStr = match.Groups[1].Value;
+                //if (tabName.Equals("status" + numberStr) && listFilter.SelectToken("status") != null)
+                //{
+                //    query = query.Where(item => item.Status.ToString().Equals(numberStr));
+                //    totalItems = await query.CountAsync();
+                //}
             }
 
             var dcapproval = query.Skip(skip).Take(limit).ToList();
-
             if (dcapproval.Count == 0)
             {
                 return Ok(new
@@ -378,11 +396,13 @@ namespace Document_Approval_Project_BE.Controllers
                 unit = d.UnitName,
                 documentType = d.DocumentTypeName,
                 Processing = d.ProcessingBy,
-                d.IsProcessing,
+                isProcessing = CheckIsProcessing(UserId, d.DocumentApprovalId),
                 d.RelatedProposal,
                 d.Status,
                 subject = d.Subject,
             }).ToList();
+
+            
 
             return Ok(new
             {
@@ -395,30 +415,43 @@ namespace Document_Approval_Project_BE.Controllers
             });
         }
 
+        bool CheckIsProcessing(int? userId, Guid documentApprovalId)
+        {
+            var documents = db.ApprovalPersons
+            .Where(x => x.DocumentApprovalId == documentApprovalId && x.ApprovalPersonId == userId);
+
+            if (documents != null)
+            {
+                var isProcessing = documents.Any(p => (p.PersonDuty == 1 && p.IsProcessing == true && p.IsApprove == false) || (p.PersonDuty == 2 && p.IsSign == false && p.IsProcessing == true));
+                return isProcessing;
+            }
+            else
+            {
+                // Nếu không tìm thấy userApprovalPerson, không có gì để xử lý
+                return false;
+            }
+        }
+
         [HttpGet]
         [Route("view/{id}")]
         public IHttpActionResult GetDocumentById(int id)
         {
-            var document = db.DocumentApprovals.SingleOrDefault(p => p.Id == id);
+            var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
             if (document != null)
             {
-                var files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId);
-                var approvers = db.ApprovalPersons
-                    .Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 1);
-                var signers = db.ApprovalPersons
-                    .Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2);
-                return Ok(new
+                var documentInfo = new
                 {
-                    state = "true",
                     document,
-                    files,
-                    approvers,
-                    signers
-                });
+                    files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                    approvers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 1).ToList(),
+                    signers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2).ToList()
+                };
+                return Ok(documentInfo);
             }
             var content = new
             {
                 state = "false",
+                message = "Document not exist",
                 document = new Object()
             };
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, content));

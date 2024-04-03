@@ -33,8 +33,6 @@ namespace Document_Approval_Project_BE.Models
         public DateTime CreateDate {  get; set; } = DateTime.Now;
         public int? Status { get; set; } = null;
         public string ProcessingBy { get; set; }
-        public Boolean IsProcessing { get; set; } = false;
-        public Boolean IsSigningProcess { get; set; } = false;
         public int? SharingToUsers { get; set; } = null;
     }
 }

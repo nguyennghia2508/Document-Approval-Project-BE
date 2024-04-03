@@ -16,6 +16,8 @@ namespace Document_Approval_Project_BE.Models
         public string ApprovalPersonName { get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public int PersonDuty {  get; set; }
-        public Boolean IsApproved { get; set; } = false;
+        public Boolean IsApprove { get; set; } = false;
+        public Boolean IsProcessing { get; set; } = false;
+        public Boolean IsSign {  get; set; } = false;
     }
 }

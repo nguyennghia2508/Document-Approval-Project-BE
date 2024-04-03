@@ -70,7 +70,7 @@ namespace Document_Approval_Project_BE.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userInfor = db.Users.Single(p => p.Email == user.Email);
+            var userInfor = db.Users.SingleOrDefault(p => p.Email == user.Email);
             if (userInfor == null)
             {
                 return Ok(new

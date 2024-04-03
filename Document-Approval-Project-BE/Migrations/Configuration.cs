@@ -43,6 +43,13 @@
                         Username = "Tester01",
                         Email = "tester01@gmail.com",
                         Password = hashPassword,
+                    },
+                    new User()
+                    {
+                        //UserId = 3,
+                        Username = "Tester02",
+                        Email = "tester02@gmail.com",
+                        Password = hashPassword,
                     }
                 });
                 context.SaveChanges();

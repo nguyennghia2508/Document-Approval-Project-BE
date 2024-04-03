@@ -11,13 +11,14 @@ namespace Document_Approval_Project_BE.Models
     {
         [Key]
         public int Id { get; set; }
+        public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public Guid CommentId { get; set; } = Guid.NewGuid();
-        public Guid ApprovalPersonId { get; set; } = Guid.Empty;
+        public int? ApprovalPersonId { get; set; } = null;
+        public string ApprovalPersonName { get; set; }
         [Column(TypeName = "DateTime2")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public string CommentContent {  get; set; }
-        public string CommentTime { get; set; }
-        public int ParentNode { get; set; }
+        public int? ParentNode { get; set; } = null;
         public Boolean IsSubComment { get; set; }
 
     }

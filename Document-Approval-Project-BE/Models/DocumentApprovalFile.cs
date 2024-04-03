@@ -13,6 +13,7 @@ namespace Document_Approval_Project_BE.Models
         public int Id { get; set; }
         public Guid DocumentFileId { get; set; } = Guid.NewGuid();
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
+        public Guid CommentId { get; set; } = Guid.Empty;
         public string FileName { get; set; }
         public string FileType { get; set; }
         public string FilePath { get; set; }

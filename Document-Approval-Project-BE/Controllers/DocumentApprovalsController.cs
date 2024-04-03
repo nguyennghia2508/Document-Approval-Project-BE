@@ -176,7 +176,6 @@ namespace Document_Approval_Project_BE.Controllers
                                 DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
                             };
 
-                            fileApprovals.Add(fileApproval);
                             db.DocumentApprovalFiles.Add(new DocumentApprovalFile
                             {
                                 FileName = fileApproval.FileName,
@@ -190,16 +189,29 @@ namespace Document_Approval_Project_BE.Controllers
 
                     }
 
+                    DocumentApprovalComment comment = new DocumentApprovalComment
+                    {
+                        ApprovalPersonId = dcument.ApplicantId,
+                        ApprovalPersonName = dcument.ApplicantName,
+                        DocumentApprovalId = dcument.DocumentApprovalId,
+                        CommentContent = "Submit the request " + dcument.RequestCode,
+                    };
+
+                    db.DocumentApprovalComments.Add(comment);
+
                     db.SaveChanges();
 
                     return Ok(new
                     {
                         state = "true",
                         dc = dcument,
-                        files = fileApprovals,
-                        ap = listPerson,
+                        //files = fileApprovals,
+                        //ap = listPerson,
+                        //comment
                     });
                 }
+
+
 
                 db.SaveChanges();
 
@@ -207,7 +219,7 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     state = "true",
                     dc = dcument,
-                    ap = listPerson,
+                    //ap = listPerson,
                 });
             }
             catch (Exception ex)
@@ -439,12 +451,25 @@ namespace Document_Approval_Project_BE.Controllers
             var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
             if (document != null)
             {
+                var listComment = db.DocumentApprovalComments.ToList();
+
+                
+
                 var documentInfo = new
                 {
                     document,
                     files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                     approvers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 1).ToList(),
-                    signers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2).ToList()
+                    signers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2).ToList(),
+                    comments = listComment
+                    .OrderByDescending(d => d.CreateDate)
+                    .Where(c => c.ParentNode == null) // Lọc các comment gốc (không có parentNode)
+                    .Select(c => new
+                    {
+                        comment = c,
+                        children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList() // Lấy các children comment của comment hiện tại
+                    })
+                    .ToList()
                 };
                 return Ok(documentInfo);
             }

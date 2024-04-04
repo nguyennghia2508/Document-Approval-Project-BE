@@ -19,5 +19,8 @@ namespace Document_Approval_Project_BE.Models
         public Boolean IsApprove { get; set; } = false;
         public Boolean IsProcessing { get; set; } = false;
         public Boolean IsSign {  get; set; } = false;
+        [Column(TypeName = "DateTime2")]
+        public DateTime? ExecutionDate { get; set; }
+        public string Comment {  get; set; }
     }
 }

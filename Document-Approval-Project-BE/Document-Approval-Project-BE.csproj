@@ -318,6 +318,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ApprovalPersonController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
@@ -363,6 +364,18 @@
     <Compile Include="Migrations\202404031518004_update-db-v9.cs" />
     <Compile Include="Migrations\202404031518004_update-db-v9.Designer.cs">
       <DependentUpon>202404031518004_update-db-v9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404040747516_update-db-v10.cs" />
+    <Compile Include="Migrations\202404040747516_update-db-v10.Designer.cs">
+      <DependentUpon>202404040747516_update-db-v10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404040815520_update-db-v11.cs" />
+    <Compile Include="Migrations\202404040815520_update-db-v11.Designer.cs">
+      <DependentUpon>202404040815520_update-db-v11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404040906429_update-db-v12.cs" />
+    <Compile Include="Migrations\202404040906429_update-db-v12.Designer.cs">
+      <DependentUpon>202404040906429_update-db-v12.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApprovalPerson.cs" />
@@ -546,6 +559,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404031518004_update-db-v9.resx">
       <DependentUpon>202404031518004_update-db-v9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404040747516_update-db-v10.resx">
+      <DependentUpon>202404040747516_update-db-v10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404040815520_update-db-v11.resx">
+      <DependentUpon>202404040815520_update-db-v11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404040906429_update-db-v12.resx">
+      <DependentUpon>202404040906429_update-db-v12.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

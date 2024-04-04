@@ -63,6 +63,8 @@ namespace Document_Approval_Project_BE.Controllers
 
                 var files = httpRequest.Files;
                 DocumentApproval dcument = new DocumentApproval();
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+
                 if (body != null)
                 {
                     dcument = new DocumentApproval
@@ -189,7 +191,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                     }
 
-                    DocumentApprovalComment comment = new DocumentApprovalComment
+                    comment = new DocumentApprovalComment
                     {
                         ApprovalPersonId = dcument.ApplicantId,
                         ApprovalPersonName = dcument.ApplicantName,
@@ -211,7 +213,13 @@ namespace Document_Approval_Project_BE.Controllers
                     });
                 }
 
-
+                comment = new DocumentApprovalComment
+                {
+                    ApprovalPersonId = dcument.ApplicantId,
+                    ApprovalPersonName = dcument.ApplicantName,
+                    DocumentApprovalId = dcument.DocumentApprovalId,
+                    CommentContent = "Submit the request " + dcument.RequestCode,
+                };
 
                 db.SaveChanges();
 
@@ -451,7 +459,8 @@ namespace Document_Approval_Project_BE.Controllers
             var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
             if (document != null)
             {
-                var listComment = db.DocumentApprovalComments.ToList();
+                var listComment = db.DocumentApprovalComments
+                    .Where(c => c.DocumentApprovalId == document.DocumentApprovalId).ToList();
 
                 
 
@@ -459,8 +468,7 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     document,
                     files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
-                    approvers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 1).ToList(),
-                    signers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId && p.PersonDuty == 2).ToList(),
+                    persons = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                     comments = listComment
                     .OrderByDescending(d => d.CreateDate)
                     .Where(c => c.ParentNode == null) // Lọc các comment gốc (không có parentNode)

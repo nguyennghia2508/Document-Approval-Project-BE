@@ -35,5 +35,6 @@ namespace Document_Approval_Project_BE.Models
         public string ProcessingBy { get; set; }
         public int? SharingToUsers { get; set; } = null;
         public Boolean IsDelete { get; set; } = false;
+        public Boolean IsReject {  get; set; } = false;
     }
 }

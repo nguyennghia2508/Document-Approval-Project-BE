@@ -13,6 +13,7 @@ namespace Document_Approval_Project_BE.Models
         public int Id { get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public Guid CommentId { get; set; } = Guid.NewGuid();
+        public Boolean IsFirst { get; set; }
         public int? ApprovalPersonId { get; set; } = null;
         public string ApprovalPersonName { get; set; }
         [Column(TypeName = "DateTime2")]

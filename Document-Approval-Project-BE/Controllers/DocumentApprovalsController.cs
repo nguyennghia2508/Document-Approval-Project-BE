@@ -196,7 +196,8 @@ namespace Document_Approval_Project_BE.Controllers
                         ApprovalPersonId = dcument.ApplicantId,
                         ApprovalPersonName = dcument.ApplicantName,
                         DocumentApprovalId = dcument.DocumentApprovalId,
-                        CommentContent = "Submit the request " + dcument.RequestCode,
+                        CommentContent = "Submit the request",
+                        IsFirst = true,
                     };
 
                     db.DocumentApprovalComments.Add(comment);
@@ -218,7 +219,8 @@ namespace Document_Approval_Project_BE.Controllers
                     ApprovalPersonId = dcument.ApplicantId,
                     ApprovalPersonName = dcument.ApplicantName,
                     DocumentApprovalId = dcument.DocumentApprovalId,
-                    CommentContent = "Submit the request " + dcument.RequestCode,
+                    CommentContent = "Submit the request",
+                    IsFirst = true,
                 };
 
                 db.SaveChanges();

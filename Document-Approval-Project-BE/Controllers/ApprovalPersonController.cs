@@ -56,7 +56,7 @@ namespace Document_Approval_Project_BE.Controllers
                             CommentStatus = 1,
                         };
 
-                        updateStatus.ProcessingBy = approval.ApprovalPersonName;
+                        updateStatus.ProcessingBy = nextApproval.ApprovalPersonName;
 
                         approval.ExecutionDate = DateTime.Now;
                         nextApproval.IsProcessing = true;
@@ -105,7 +105,7 @@ namespace Document_Approval_Project_BE.Controllers
                             approval.IsLast = true;
                             nextSigner.IsProcessing = true;
 
-                            updateStatus.ProcessingBy = approval.ApprovalPersonName;
+                            updateStatus.ProcessingBy = nextSigner.ApprovalPersonName;
                             updateStatus.Status = 2;
 
                             db.DocumentApprovalComments.Add(comment);
@@ -118,6 +118,7 @@ namespace Document_Approval_Project_BE.Controllers
                             return Ok(new
                             {
                                 state = "true",
+                                document = updateStatus,
                                 approvers = nextApprovers,
                                 signers = listSigner,
                                 comments = listComment.OrderByDescending(d => d.CreateDate)
@@ -189,7 +190,7 @@ namespace Document_Approval_Project_BE.Controllers
                             CommentStatus = 2,
                         };
 
-                        updateStatus.ProcessingBy = signed.ApprovalPersonName;
+                        updateStatus.ProcessingBy = nextSigned.ApprovalPersonName;
 
                         signed.ExecutionDate = DateTime.Now;
                         nextSigned.IsProcessing = true;
@@ -216,51 +217,44 @@ namespace Document_Approval_Project_BE.Controllers
                     }
                     else
                     {
-                        var nextSigner = db.ApprovalPersons
-                        .Where(p => p.PersonDuty == 2 && p.IsSign == false
-                        && p.DocumentApprovalId == signed.DocumentApprovalId)
-                        .OrderBy(p => p.Index)
-                        .FirstOrDefault();
-                        if (nextSigner != null)
+                        signed.IsSign = true;
+                        signed.IsProcessing = false;
+
+                        comment = new DocumentApprovalComment
                         {
-                            signed.IsSign = true;
-                            signed.IsProcessing = false;
+                            DocumentApprovalId = approvalPerson.DocumentApprovalId,
+                            ApprovalPersonId = approvalPerson.ApprovalPersonId,
+                            ApprovalPersonName = approvalPerson.ApprovalPersonName,
+                            CommentContent = approvalPerson.Comment,
+                            CommentStatus = 2,
+                        };
 
-                            comment = new DocumentApprovalComment
+                        signed.ExecutionDate = DateTime.Now;
+                        signed.IsLast = true;
+
+                        updateStatus.ProcessingBy = null;
+                        updateStatus.Status = 4;
+
+                        db.DocumentApprovalComments.Add(comment);
+                        db.SaveChanges();
+
+                        var nextSigners = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
+                        listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                        return Ok(new
+                        {
+                            state = "true",
+                            document = updateStatus,
+                            signers = nextSigners,
+                            comments = listComment.OrderByDescending(d => d.CreateDate)
+                            .Where(c => c.ParentNode == null)
+                            .Select(c => new
                             {
-                                DocumentApprovalId = approvalPerson.DocumentApprovalId,
-                                ApprovalPersonId = approvalPerson.ApprovalPersonId,
-                                ApprovalPersonName = approvalPerson.ApprovalPersonName,
-                                CommentContent = approvalPerson.Comment,
-                                CommentStatus = 2,
-                            };
-
-                            signed.ExecutionDate = DateTime.Now;
-                            signed.IsLast = true;
-
-                            updateStatus.ProcessingBy = signed.ApprovalPersonName;
-                            updateStatus.Status = 4;
-
-                            db.DocumentApprovalComments.Add(comment);
-                            db.SaveChanges();
-
-                            var nextSigners = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
-                            listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
-
-                            return Ok(new
-                            {
-                                state = "true",
-                                signers = nextSigners,
-                                comments = listComment.OrderByDescending(d => d.CreateDate)
-                                .Where(c => c.ParentNode == null)
-                                .Select(c => new
-                                {
-                                    comment = c,
-                                    children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
-                                })
-                                .ToList(),
-                            });
-                        }
+                                comment = c,
+                                children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                            })
+                            .ToList(),
+                        });
                     }
 
                     //var signers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
@@ -270,6 +264,75 @@ namespace Document_Approval_Project_BE.Controllers
                     //    state = "true",
                     //    signers,
                     //});
+                }
+                return Ok(new
+                {
+                    state = "false",
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("reject")]
+        public IHttpActionResult RejectDocument([FromBody] ApprovalPerson approvalPerson)
+        {
+            try
+            {
+                var person = db.ApprovalPersons
+                    .FirstOrDefault(p => p.ApprovalPersonId == approvalPerson.ApprovalPersonId
+                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId
+                    && p.Index == approvalPerson.Index && p.PersonDuty == approvalPerson.PersonDuty);
+
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+                var listComment = new List<DocumentApprovalComment>();
+                var updateStatus = db.DocumentApprovals.FirstOrDefault(p => p.DocumentApprovalId == person.DocumentApprovalId);
+
+                if (person != null)
+                {
+                    person.IsReject = true;
+                    person.IsProcessing = false;
+                    person.ExecutionDate = DateTime.Now;
+
+                    comment = new DocumentApprovalComment
+                    {
+                        DocumentApprovalId = approvalPerson.DocumentApprovalId,
+                        ApprovalPersonId = approvalPerson.ApprovalPersonId,
+                        ApprovalPersonName = approvalPerson.ApprovalPersonName,
+                        CommentContent = approvalPerson.Comment,
+                        CommentStatus = 3,
+                    };
+
+                    updateStatus.ProcessingBy = db.DocumentApprovals
+                    .FirstOrDefault(p => p.DocumentApprovalId == person.DocumentApprovalId).ApplicantName;
+                    updateStatus.Status = 3;
+                    updateStatus.IsReject = true;
+                    updateStatus.ProcessingBy = null;
+
+                    db.DocumentApprovalComments.Add(comment);
+                    db.SaveChanges();
+
+                    var getAllPerson = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
+                    listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                    return Ok(new
+                    {
+                        state = "true",
+                        document = updateStatus,
+                        approvers = getAllPerson.Where(p => p.PersonDuty == 1).ToList(),
+                        signers = getAllPerson.Where(p => p.PersonDuty == 2).ToList(),
+                        comments = listComment.OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                        })
+                        .ToList(),
+                    });
                 }
                 return Ok(new
                 {

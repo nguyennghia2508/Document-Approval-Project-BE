@@ -20,6 +20,7 @@ namespace Document_Approval_Project_BE.Models
         public string CommentContent {  get; set; }
         public int? ParentNode { get; set; } = null;
         public Boolean IsSubComment { get; set; }
+        public int? CommentStatus { get; set; }
 
     }
 }

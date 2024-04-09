@@ -333,6 +333,18 @@
     <Compile Include="Migrations\202404081501574_update-db-v1.Designer.cs">
       <DependentUpon>202404081501574_update-db-v1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404050704236_update-db-v16.cs" />
+    <Compile Include="Migrations\202404050704236_update-db-v16.Designer.cs">
+      <DependentUpon>202404050704236_update-db-v16.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404050720191_update-db-v17.cs" />
+    <Compile Include="Migrations\202404050720191_update-db-v17.Designer.cs">
+      <DependentUpon>202404050720191_update-db-v17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404050911327_update-db-v18.cs" />
+    <Compile Include="Migrations\202404050911327_update-db-v18.Designer.cs">
+      <DependentUpon>202404050911327_update-db-v18.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApprovalPerson.cs" />
     <Compile Include="Models\Authentication.cs" />
@@ -491,6 +503,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202404081501574_update-db-v1.resx">
       <DependentUpon>202404081501574_update-db-v1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404050704236_update-db-v16.resx">
+      <DependentUpon>202404050704236_update-db-v16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404050720191_update-db-v17.resx">
+      <DependentUpon>202404050720191_update-db-v17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404050911327_update-db-v18.resx">
+      <DependentUpon>202404050911327_update-db-v18.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

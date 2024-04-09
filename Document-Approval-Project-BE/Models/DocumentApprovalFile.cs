@@ -18,6 +18,8 @@ namespace Document_Approval_Project_BE.Models
         public string FileType { get; set; }
         public string FilePath { get; set; }
         public long FileSize { get; set; }
+        [Column(TypeName = "DateTime2")]
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         public int DocumentType {  get; set; }
 
     }

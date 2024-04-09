@@ -329,65 +329,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202404030249009_update-db-v1.cs" />
-    <Compile Include="Migrations\202404030249009_update-db-v1.Designer.cs">
-      <DependentUpon>202404030249009_update-db-v1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030323589_update-db-v2.cs" />
-    <Compile Include="Migrations\202404030323589_update-db-v2.Designer.cs">
-      <DependentUpon>202404030323589_update-db-v2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030610580_update-db-v3.cs" />
-    <Compile Include="Migrations\202404030610580_update-db-v3.Designer.cs">
-      <DependentUpon>202404030610580_update-db-v3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030628015_update-db-v4.cs" />
-    <Compile Include="Migrations\202404030628015_update-db-v4.Designer.cs">
-      <DependentUpon>202404030628015_update-db-v4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030746279_update-db-v5.cs" />
-    <Compile Include="Migrations\202404030746279_update-db-v5.Designer.cs">
-      <DependentUpon>202404030746279_update-db-v5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030756462_update-db-v6.cs" />
-    <Compile Include="Migrations\202404030756462_update-db-v6.Designer.cs">
-      <DependentUpon>202404030756462_update-db-v6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030810286_update-db-v7.cs" />
-    <Compile Include="Migrations\202404030810286_update-db-v7.Designer.cs">
-      <DependentUpon>202404030810286_update-db-v7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404030828549_update-db-v8.cs" />
-    <Compile Include="Migrations\202404030828549_update-db-v8.Designer.cs">
-      <DependentUpon>202404030828549_update-db-v8.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404031518004_update-db-v9.cs" />
-    <Compile Include="Migrations\202404031518004_update-db-v9.Designer.cs">
-      <DependentUpon>202404031518004_update-db-v9.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404040747516_update-db-v10.cs" />
-    <Compile Include="Migrations\202404040747516_update-db-v10.Designer.cs">
-      <DependentUpon>202404040747516_update-db-v10.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404040815520_update-db-v11.cs" />
-    <Compile Include="Migrations\202404040815520_update-db-v11.Designer.cs">
-      <DependentUpon>202404040815520_update-db-v11.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404040906429_update-db-v12.cs" />
-    <Compile Include="Migrations\202404040906429_update-db-v12.Designer.cs">
-      <DependentUpon>202404040906429_update-db-v12.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404050258197_update-db-v13.cs" />
-    <Compile Include="Migrations\202404050258197_update-db-v13.Designer.cs">
-      <DependentUpon>202404050258197_update-db-v13.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404050427280_update-db-v14.cs" />
-    <Compile Include="Migrations\202404050427280_update-db-v14.Designer.cs">
-      <DependentUpon>202404050427280_update-db-v14.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404050429029_update-db-v15.cs" />
-    <Compile Include="Migrations\202404050429029_update-db-v15.Designer.cs">
-      <DependentUpon>202404050429029_update-db-v15.cs</DependentUpon>
+    <Compile Include="Migrations\202404081501574_update-db-v1.cs" />
+    <Compile Include="Migrations\202404081501574_update-db-v1.Designer.cs">
+      <DependentUpon>202404081501574_update-db-v1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202404050704236_update-db-v16.cs" />
     <Compile Include="Migrations\202404050704236_update-db-v16.Designer.cs">
@@ -557,50 +501,8 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202404030249009_update-db-v1.resx">
-      <DependentUpon>202404030249009_update-db-v1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030323589_update-db-v2.resx">
-      <DependentUpon>202404030323589_update-db-v2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030610580_update-db-v3.resx">
-      <DependentUpon>202404030610580_update-db-v3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030628015_update-db-v4.resx">
-      <DependentUpon>202404030628015_update-db-v4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030746279_update-db-v5.resx">
-      <DependentUpon>202404030746279_update-db-v5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030756462_update-db-v6.resx">
-      <DependentUpon>202404030756462_update-db-v6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030810286_update-db-v7.resx">
-      <DependentUpon>202404030810286_update-db-v7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404030828549_update-db-v8.resx">
-      <DependentUpon>202404030828549_update-db-v8.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404031518004_update-db-v9.resx">
-      <DependentUpon>202404031518004_update-db-v9.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404040747516_update-db-v10.resx">
-      <DependentUpon>202404040747516_update-db-v10.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404040815520_update-db-v11.resx">
-      <DependentUpon>202404040815520_update-db-v11.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404040906429_update-db-v12.resx">
-      <DependentUpon>202404040906429_update-db-v12.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404050258197_update-db-v13.resx">
-      <DependentUpon>202404050258197_update-db-v13.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404050427280_update-db-v14.resx">
-      <DependentUpon>202404050427280_update-db-v14.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404050429029_update-db-v15.resx">
-      <DependentUpon>202404050429029_update-db-v15.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202404081501574_update-db-v1.resx">
+      <DependentUpon>202404081501574_update-db-v1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404050704236_update-db-v16.resx">
       <DependentUpon>202404050704236_update-db-v16.cs</DependentUpon>

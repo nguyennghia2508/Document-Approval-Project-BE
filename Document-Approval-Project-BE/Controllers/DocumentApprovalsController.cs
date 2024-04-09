@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -85,14 +86,16 @@ namespace Document_Approval_Project_BE.Controllers
                         Subject = body.Subject,
                         ContentSum = body.ContentSum,
                         CreateDate = body.CreateDate,
-                        Status = 1,
+                        IsDraft = body.IsDraft,
+                        Status = body.IsDraft ? 0 : 1,
                     };
                 }
 
                 db.DocumentApprovals.Add(dcument);
                 db.SaveChanges();
 
-                dcument.RequestCode = $"{dcument.Id}-IDOC-AVN-{DateTime.Now.Year}";
+                var departmentCode = db.Departments.FirstOrDefault(d => d.Id == dcument.DepartmentId).DepartmentCode;
+                dcument.RequestCode = $"{dcument.Id}-IDOC-{departmentCode}-{DateTime.Now.Year}";
                 db.SaveChanges();
 
                 var approvalPerson = JObject.Parse(httpRequest.Form["ApprovalPerson"]);
@@ -122,7 +125,7 @@ namespace Document_Approval_Project_BE.Controllers
                                 ApprovalPersonId = ((int)item["ApprovalPersonId"]),
                                 ApprovalPersonName = item["ApprovalPersonName"].ToString(),
                                 DocumentApprovalId = dcument.DocumentApprovalId,
-                                PersonDuty = key == "approvers" ? 1 : 2,
+                                PersonDuty = (int)item["PersonDuty"],
                                 IsProcessing = key == "approvers" && indexMap[key] == 1,
                             };
                             listPerson[key].Add(aP);
@@ -136,59 +139,58 @@ namespace Document_Approval_Project_BE.Controllers
 
                 if (listPerson.ContainsKey("approvers") && listPerson["approvers"].Count > 0)
                 {
-                    dcument.ProcessingBy = listPerson["approvers"][0].ApprovalPersonName;
-                    db.SaveChanges();
+                    if(!dcument.IsDraft)
+                    {
+                        dcument.ProcessingBy = listPerson["approvers"][0].ApprovalPersonName;
+                        db.SaveChanges();
+                    }
                 }
 
 
                 if (files.Count > 0)
                 {
-                    var fileApprovals = new List<object>();
+                    var fileApprovals = new List<DocumentApprovalFile>();
 
-                    if (files.Count > 0)
+                    for (int i = 0; i < files.Count; i++)
                     {
-                        for (int i = 0; i < files.Count; i++)
+                        HttpPostedFile fileUpload = files[i];
+                        FileInfo fileInfo = new FileInfo(fileUpload.FileName);
+
+                        string Filepath = GetFilePath(dcument.DocumentApprovalId.ToString());
+
+                        if (!Directory.Exists(Filepath))
                         {
-                            HttpPostedFile fileUpload = files[i];
-                            FileInfo fileInfo = new FileInfo(fileUpload.FileName);
-
-                            string Filepath = GetFilePath(dcument.DocumentApprovalId.ToString());
-
-                            if (!Directory.Exists(Filepath))
-                            {
-                                Directory.CreateDirectory(Filepath);
-                            }
-
-                            string fullPath = Path.Combine(Filepath, fileUpload.FileName);
-                            string alterPath = "Upload/Files/" + 
-                                dcument.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
-
-                            using (var stream = new FileStream(fullPath, FileMode.Create))
-                            {
-                                await fileUpload.InputStream.CopyToAsync(stream);
-                            }
-
-                            var fileApproval = new
-                            {
-                                fileUpload.FileName,
-                                FilePath = alterPath,
-                                FileSize = fileUpload.ContentLength,
-                                FileType = fileUpload.ContentType,
-                                dcument.DocumentApprovalId,
-                                DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
-                            };
-
-                            db.DocumentApprovalFiles.Add(new DocumentApprovalFile
-                            {
-                                FileName = fileApproval.FileName,
-                                FileSize = fileApproval.FileSize,
-                                FilePath = fileApproval.FilePath,
-                                FileType = fileApproval.FileType,
-                                DocumentApprovalId = fileApproval.DocumentApprovalId,
-                                DocumentType = fileApproval.DocumentType
-                            });
+                            Directory.CreateDirectory(Filepath);
                         }
 
+                        string fullPath = Path.Combine(Filepath, fileUpload.FileName);
+                        string alterPath = "Upload/Files/" + 
+                            dcument.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
+
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await fileUpload.InputStream.CopyToAsync(stream);
+                        }
+
+                        var fileApproval = new
+                        {
+                            fileUpload.FileName,
+                            FilePath = alterPath,
+                            FileSize = fileUpload.ContentLength,
+                            FileType = fileUpload.ContentType,
+                            dcument.DocumentApprovalId,
+                            DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
+                        };
+
+                        db.DocumentApprovalFiles.Add(new DocumentApprovalFile
+                        {
+                            FileName = fileApproval.FileName,
+                            FileSize = fileApproval.FileSize,
+                            FilePath = fileApproval.FilePath,
+                            FileType = fileApproval.FileType,
+                            DocumentApprovalId = fileApproval.DocumentApprovalId,
+                            DocumentType = fileApproval.DocumentType
+                        });
                     }
 
                     comment = new DocumentApprovalComment
@@ -341,7 +343,7 @@ namespace Document_Approval_Project_BE.Controllers
                 }
                 if (!listFilter["status"].ToString().Equals("all") && listFilter["status"] != null)
                 {
-                    var status = listFilter["status"].ToString(); 
+                    var status = listFilter["status"].ToString();
                     query = query.Where(item => item.Status.ToString().Equals(status));
                 }
             }
@@ -393,6 +395,20 @@ namespace Document_Approval_Project_BE.Controllers
                 //}
             }
 
+            if (UserId != null)
+            {
+                query = query.Where(u =>
+                    u.ApplicantId == UserId ||
+                    (u.Status != 0 ||
+                        u.Status == 1 || db.ApprovalPersons.Any(p =>
+                            p.DocumentApprovalId == u.DocumentApprovalId &&
+                            p.ApprovalPersonId == UserId &&
+                            u.Status == 1)
+                        
+                    )
+                );
+            }
+
             var dcapproval = query.Skip(skip).Take(limit).ToList();
             if (dcapproval.Count == 0)
             {
@@ -421,6 +437,8 @@ namespace Document_Approval_Project_BE.Controllers
                 isProcessing = CheckIsProcessing(UserId, d.DocumentApprovalId),
                 d.RelatedProposal,
                 d.Status,
+                d.IsDraft,
+                d.IsReject,
                 subject = d.Subject,
             }).ToList();
 
@@ -431,9 +449,6 @@ namespace Document_Approval_Project_BE.Controllers
                 state = "true",
                 listDcapproval,
                 totalItems,
-                tabName,
-                UserId,
-                data
             });
         }
 
@@ -456,40 +471,365 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpGet]
         [Route("view/{id}")]
-        public IHttpActionResult GetDocumentById(int id)
+        public IHttpActionResult GetDocumentById(int id, int v)
         {
-            var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
-            if (document != null)
+            var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
+                .Any(dc => dc.ApplicantId == v || dc.Status == 1 || dc.Status == 3
+                && db.ApprovalPersons.Any(user => user.DocumentApprovalId == dc.DocumentApprovalId
+                && user.ApprovalPersonId == v)
+            );
+            if(checkUser)
             {
-                var listComment = db.DocumentApprovalComments
+                var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
+                if (document != null)
+                {
+                    var listComment = db.DocumentApprovalComments
+                        .Where(c => c.DocumentApprovalId == document.DocumentApprovalId).ToList();
+
+                    var documentInfo = new
+                    {
+                        document,
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        comments = listComment
+                        .OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null) // Lọc các comment gốc (không có parentNode)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList() // Lấy các children comment của comment hiện tại
+                        })
+                        .ToList()
+                    };
+                    return Ok(documentInfo);
+                }
+                var content = new
+                {
+                    state = "false",
+                    message = "Document not exist",
+                    document = new Object()
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, content));
+            }
+            else
+            {
+                var rejectPermission = new
+                {
+                    state = "false",
+                    message = "You do not have permission to access this Document",
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.Unauthorized, rejectPermission));
+            }
+        }
+
+        [HttpGet]
+        [Route("edit/{id}")]
+        public IHttpActionResult GetEditDocumentById(int id,int v)
+        {
+            var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
+                .Any(dc => dc.ApplicantId == v
+            );
+            if (checkUser)
+            {
+                var document = db.DocumentApprovals.FirstOrDefault(dc => dc.Id == id);
+                if(document != null)
+                {
+                    var listComment = db.DocumentApprovalComments
                     .Where(c => c.DocumentApprovalId == document.DocumentApprovalId).ToList();
 
-                
-
-                var documentInfo = new
-                {
-                    document,
-                    files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
-                    persons = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
-                    comments = listComment
-                    .OrderByDescending(d => d.CreateDate)
-                    .Where(c => c.ParentNode == null) // Lọc các comment gốc (không có parentNode)
-                    .Select(c => new
+                    var documentInfo = new
                     {
-                        comment = c,
-                        children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList() // Lấy các children comment của comment hiện tại
-                    })
-                    .ToList()
+                        document,
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                    };
+                    return Ok(documentInfo);
+                }
+                var content = new
+                {
+                    state = "false",
+                    message = "Document not exist",
+                    document = new Object()
                 };
-                return Ok(documentInfo);
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, content));
             }
-            var content = new
+            else
             {
-                state = "false",
-                message = "Document not exist",
-                document = new Object()
-            };
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, content));
+                var rejectPermission = new
+                {
+                    state = "false",
+                    message = "You do not have permission to access this Document",
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.Unauthorized, rejectPermission));
+            }
+        }
+
+        [HttpPost]
+        [Route("edit/{id}")]
+        public async Task<IHttpActionResult> EditDocument(int id)
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                return BadRequest("Unsupported media type.");
+            }
+
+            try
+            {
+                var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
+                var httpRequest = currentContext.Request;
+
+                var bodyJson = httpRequest.Form["Data"];
+                var body = JsonConvert.DeserializeObject<DocumentApproval>(bodyJson);
+
+                var files = httpRequest.Files;
+
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+
+                if (body != null)
+                {
+                    document.ApplicantId = body.ApplicantId;
+                    document.ApplicantName = body.ApplicantName;
+                    document.DepartmentId = body.DepartmentId;
+                    document.DepartmentName = db.Departments.SingleOrDefault(item => item.Id == body.DepartmentId)?.DepartmentName;
+                    document.SectionId = body.SectionId;
+                    document.SectionName = db.Departments.SingleOrDefault(item => item.Id == body.SectionId)?.DepartmentName;
+                    document.UnitId = body.UnitId;
+                    document.UnitName = db.Departments.SingleOrDefault(item => item.Id == body.UnitId)?.DepartmentName;
+                    document.CategoryId = body.CategoryId;
+                    document.CategoryName = db.Categories.SingleOrDefault(item => item.Id == body.CategoryId)?.CategoryName;
+                    document.DocumentTypeId = body.DocumentTypeId;
+                    document.DocumentTypeName = db.DocumentTypes.SingleOrDefault(item => item.Id == body.DocumentTypeId)?.DocumentTypeName;
+                    document.RelatedProposal = body.RelatedProposal;
+                    document.Subject = body.Subject;
+                    document.ContentSum = body.ContentSum;
+                    document.IsDraft = body.IsDraft;
+                    document.Status = body.IsDraft ? 0 : 1;
+                    document.IsReject = false;
+                    document.ProcessingBy = null;
+                }
+
+                db.SaveChanges();
+
+                var approvalPerson = JObject.Parse(httpRequest.Form["ApprovalPerson"]);
+
+                Dictionary<string, List<ApprovalPerson>> listPerson = new Dictionary<string, List<ApprovalPerson>>();
+
+                string[] keysToCheck = { "approvers", "signers" };
+
+                Dictionary<string, int> indexMap = new Dictionary<string, int>();
+
+                var persons = db.ApprovalPersons.Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList();
+                var personsDelete = new List<ApprovalPerson>();
+
+                HashSet<(int, int, int)> processedPersons = new HashSet<(int, int, int)>();
+
+                foreach (var key in keysToCheck)
+                {
+                    listPerson[key] = new List<ApprovalPerson>();
+                    JArray items = (JArray)approvalPerson[key];
+
+                    if (items != null)
+                    {
+                        indexMap[key] = 1;
+
+                        foreach (var item in items)
+                        {
+                            int approvalPersonId = (int)item["ApprovalPersonId"];
+                            int index = indexMap[key];
+                            int personDuty = (int)item["PersonDuty"];
+                            Guid documentApprovalId = Guid.Parse(item["DocumentApprovalId"].ToString());
+
+                            // Tạo key để xác định mỗi ApprovalPerson
+                            var personKey = (approvalPersonId, index, personDuty);
+
+                            if (!processedPersons.Contains(personKey))
+                            {
+                                // Tạo mới ApprovalPerson
+                                ApprovalPerson aP = new ApprovalPerson
+                                {
+                                    Index = index,
+                                    ApprovalPersonId = approvalPersonId,
+                                    ApprovalPersonName = item["ApprovalPersonName"].ToString(),
+                                    DocumentApprovalId = documentApprovalId,
+                                    PersonDuty = personDuty,
+                                    IsProcessing = key == "approvers" && index == 1,
+                                };
+
+                                // Thêm ApprovalPerson vào danh sách đã xử lý
+                                processedPersons.Add(personKey);
+
+                                // Kiểm tra xem ApprovalPerson đã tồn tại trong cơ sở dữ liệu chưa
+                                var existingPerson = persons.FirstOrDefault(p =>
+                                    p.ApprovalPersonId == approvalPersonId &&
+                                    p.Index == index &&
+                                    p.PersonDuty == personDuty);
+
+                                if (existingPerson == null)
+                                {
+                                    // Nếu không tồn tại, thêm mới vào cơ sở dữ liệu
+                                    db.ApprovalPersons.Add(aP);
+                                }
+                                else
+                                {
+                                    if (existingPerson.PersonDuty == 1)
+                                    {
+                                        existingPerson.IsApprove = false;
+                                    }
+                                    else if (existingPerson.PersonDuty == 2)
+                                    {
+                                        existingPerson.IsSign = false;
+                                    }
+
+                                    if (existingPerson.IsLast)
+                                    {
+                                        existingPerson.IsLast = false;
+                                    }
+
+                                    if (existingPerson.IsReject)
+                                    {
+                                        existingPerson.IsReject = false;
+                                    }
+
+                                    existingPerson.ExecutionDate = null;
+                                    existingPerson.IsProcessing = false;
+                                }
+
+                                listPerson[key].Add(aP);
+                            }
+
+                            indexMap[key]++;
+                        }
+                    }
+                }
+
+                // Xóa các ApprovalPerson không được xử lý trong danh sách items
+                foreach (var person in persons)
+                {
+                    var personKey = (person.ApprovalPersonId, person.Index, person.PersonDuty);
+                    if (!processedPersons.Contains(personKey))
+                    {
+                        personsDelete.Add(person);
+                    }
+                }
+
+                // Xóa các ApprovalPerson cần xóa khỏi cơ sở dữ liệu
+                foreach (var personToDelete in personsDelete)
+                {
+                    db.ApprovalPersons.Remove(personToDelete);
+                }
+
+                db.SaveChanges();
+
+
+                if (listPerson.ContainsKey("approvers") && listPerson["approvers"].Count > 0)
+                {
+                    if(!document.IsDraft)
+                    {
+                        var resetProcessing = db.ApprovalPersons.Where(u => u.Index == 1
+                        && u.PersonDuty == 1 && u.DocumentApprovalId == document.DocumentApprovalId).FirstOrDefault();
+                        resetProcessing.IsProcessing = true;
+                        document.ProcessingBy = listPerson["approvers"][0].ApprovalPersonName;
+                        db.SaveChanges();
+                    }
+                }
+
+
+                if (files.Count > 0)
+                {
+                    var fileApprovals = new List<Object>();
+                    var listFile = db.DocumentApprovalFiles.Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList();
+                    var checkFileList = new List<Object>();
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        HttpPostedFile fileUpload = files[i];
+                        FileInfo fileInfo = new FileInfo(fileUpload.FileName);
+
+                        string Filepath = GetFilePath(document.DocumentApprovalId.ToString());
+
+                        if (!Directory.Exists(Filepath))
+                        {
+                            Directory.CreateDirectory(Filepath);
+                        }
+
+                        string fullPath = Path.Combine(Filepath, fileUpload.FileName);
+                        string alterPath = "Upload/Files/" +
+                            document.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
+
+                        var fileApproval = new
+                        {
+                            fileUpload.FileName,
+                            FilePath = alterPath,
+                            FileSize = fileUpload.ContentLength,
+                            FileType = fileUpload.ContentType,
+                            document.DocumentApprovalId,
+                            DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
+                        };
+
+                        var existFile = listFile.Where(f => f.FileName == fileApproval.FileName
+                        && f.DocumentType == fileApproval.DocumentType).FirstOrDefault();
+
+                        if (existFile == null)
+                        {
+                            using (var stream = new FileStream(fullPath, FileMode.Create))
+                            {
+                                await fileUpload.InputStream.CopyToAsync(stream);
+                            }
+
+                            db.DocumentApprovalFiles.Add(new DocumentApprovalFile
+                            {
+                                FileName = fileApproval.FileName,
+                                FileSize = fileApproval.FileSize,
+                                FilePath = fileApproval.FilePath,
+                                FileType = fileApproval.FileType,
+                                DocumentApprovalId = fileApproval.DocumentApprovalId,
+                                DocumentType = fileApproval.DocumentType
+                            });
+                        }
+                    }
+
+                    comment = new DocumentApprovalComment
+                    {
+                        ApprovalPersonId = document.ApplicantId,
+                        ApprovalPersonName = document.ApplicantName,
+                        DocumentApprovalId = document.DocumentApprovalId,
+                        CommentContent = "Submit the request",
+                        IsFirst = true,
+                    };
+
+                    db.DocumentApprovalComments.Add(comment);
+
+                    db.SaveChanges();
+
+                    return Ok(new
+                    {
+                        state = "true",
+                        dc = document,
+                    });
+                }
+
+                comment = new DocumentApprovalComment
+                {
+                    ApprovalPersonId = document.ApplicantId,
+                    ApprovalPersonName = document.ApplicantName,
+                    DocumentApprovalId = document.DocumentApprovalId,
+                    CommentContent = "Submit the request",
+                    IsFirst = true,
+                };
+
+                db.DocumentApprovalComments.Add(comment);
+
+                db.SaveChanges();
+
+                return Ok(new
+                {
+                    state = "true",
+                    dc = document,
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
     }
 }

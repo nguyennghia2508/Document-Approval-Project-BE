@@ -14,6 +14,7 @@ namespace Document_Approval_Project_BE.Models
         public int Index { get; set; }
         public int ApprovalPersonId { get; set; }
         public string ApprovalPersonName { get; set; }
+        public string ApprovalPersonEmail {  get; set; }
         public Guid DocumentApprovalId { get; set; } = Guid.Empty;
         public int PersonDuty {  get; set; }
         public Boolean IsApprove { get; set; } = false;

@@ -65,7 +65,8 @@ namespace Document_Approval_Project_BE.Controllers
 
                 db.SaveChanges();
 
-                var listComment = db.DocumentApprovalComments.ToList();
+                var listComment = db.DocumentApprovalComments
+                    .Where(cmt => cmt.DocumentApprovalId == comment.DocumentApprovalId).ToList();
 
                 if (files.Count > 0)
                 {

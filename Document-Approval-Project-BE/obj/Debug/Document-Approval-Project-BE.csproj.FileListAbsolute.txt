@@ -190,3 +190,8 @@ D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\bin\System.ValueTuple.xml
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv1.resources
 D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document-Approval-Project-BE.csproj.GenerateResource.cache
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv16.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv17.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv18.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv2.resources
+D:\Project\Document-Approval-Project-BE\Document-Approval-Project-BE\obj\Debug\Document_Approval_Project_BE.Migrations.updatedbv3.resources

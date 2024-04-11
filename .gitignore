@@ -224,3 +224,24 @@ AppPackages/
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
 /Document-Approval-Project-BE/Upload/Files
+/Document-Approval-Project-BE/bin
+/Document-Approval-Project-BE/obj
+/Document-Approval-Project-BE/obj/Debug
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+BuildReports/
+TestResults/
+msbuild.log
+msbuild.err
+msbuild.wrn

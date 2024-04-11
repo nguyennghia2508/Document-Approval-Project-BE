@@ -194,16 +194,16 @@ namespace Document_Approval_Project_BE.Controllers
                         });
                     }
 
-                    if (!dcument.IsDraft)
+                    }
+
+                    comment = new DocumentApprovalComment
                     {
-                        comment = new DocumentApprovalComment
-                        {
-                            ApprovalPersonId = dcument.ApplicantId,
-                            ApprovalPersonName = dcument.ApplicantName,
-                            DocumentApprovalId = dcument.DocumentApprovalId,
-                            CommentContent = "Submit the request",
-                            IsFirst = true,
-                        };
+                        ApprovalPersonId = dcument.ApplicantId,
+                        ApprovalPersonName = dcument.ApplicantName,
+                        DocumentApprovalId = dcument.DocumentApprovalId,
+                        CommentContent = "Submit the request",
+                        IsFirst = true,
+                    };
 
                         db.DocumentApprovalComments.Add(comment);
                     }

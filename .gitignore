@@ -245,3 +245,4 @@ TestResults/
 msbuild.log
 msbuild.err
 msbuild.wrn
+/Document-Approval-Project-BE/.vs

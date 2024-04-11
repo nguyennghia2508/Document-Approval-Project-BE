@@ -125,8 +125,9 @@ namespace Document_Approval_Project_BE.Controllers
                                 ApprovalPersonId = ((int)item["ApprovalPersonId"]),
                                 ApprovalPersonName = item["ApprovalPersonName"].ToString(),
                                 DocumentApprovalId = dcument.DocumentApprovalId,
+                                ApprovalPersonEmail = item["ApprovalPersonEmail"].ToString(),
                                 PersonDuty = (int)item["PersonDuty"],
-                                IsProcessing = key == "approvers" && indexMap[key] == 1,
+                                IsProcessing = key == "approvers" && !dcument.IsDraft && indexMap[key] == 1,
                             };
                             listPerson[key].Add(aP);
                             db.ApprovalPersons.Add(aP);
@@ -139,7 +140,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                 if (listPerson.ContainsKey("approvers") && listPerson["approvers"].Count > 0)
                 {
-                    if(!dcument.IsDraft)
+                    if (!dcument.IsDraft)
                     {
                         dcument.ProcessingBy = listPerson["approvers"][0].ApprovalPersonName;
                         db.SaveChanges();
@@ -164,7 +165,7 @@ namespace Document_Approval_Project_BE.Controllers
                         }
 
                         string fullPath = Path.Combine(Filepath, fileUpload.FileName);
-                        string alterPath = "Upload/Files/" + 
+                        string alterPath = "Upload/Files/" +
                             dcument.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
 
                         using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -193,6 +194,32 @@ namespace Document_Approval_Project_BE.Controllers
                         });
                     }
 
+                    if (!dcument.IsDraft)
+                    {
+                        comment = new DocumentApprovalComment
+                        {
+                            ApprovalPersonId = dcument.ApplicantId,
+                            ApprovalPersonName = dcument.ApplicantName,
+                            DocumentApprovalId = dcument.DocumentApprovalId,
+                            CommentContent = "Submit the request",
+                            IsFirst = true,
+                        };
+
+                        db.DocumentApprovalComments.Add(comment);
+                    }
+
+                    db.SaveChanges();
+
+                    return Ok(new
+                    {
+                        state = "true",
+                        dc = dcument,
+                        message = dcument.IsDraft ? "The request successfully saved" : "The request successfully submited",
+                    });
+                }
+
+                if (!dcument.IsDraft)
+                {
                     comment = new DocumentApprovalComment
                     {
                         ApprovalPersonId = dcument.ApplicantId,
@@ -203,33 +230,14 @@ namespace Document_Approval_Project_BE.Controllers
                     };
 
                     db.DocumentApprovalComments.Add(comment);
-
-                    db.SaveChanges();
-
-                    return Ok(new
-                    {
-                        state = "true",
-                        dc = dcument,
-                        //files = fileApprovals,
-                        //ap = listPerson,
-                        //comment
-                    });
                 }
-
-                comment = new DocumentApprovalComment
-                {
-                    ApprovalPersonId = dcument.ApplicantId,
-                    ApprovalPersonName = dcument.ApplicantName,
-                    DocumentApprovalId = dcument.DocumentApprovalId,
-                    CommentContent = "Submit the request",
-                    IsFirst = true,
-                };
 
                 db.SaveChanges();
 
                 return Ok(new
                 {
                     state = "true",
+                    message = dcument.IsDraft ? "The request successfully saved" : "The request successfully submited",
                     dc = dcument,
                     //ap = listPerson,
                 });
@@ -404,7 +412,7 @@ namespace Document_Approval_Project_BE.Controllers
                             p.DocumentApprovalId == u.DocumentApprovalId &&
                             p.ApprovalPersonId == UserId &&
                             u.Status == 1)
-                        
+
                     )
                 );
             }
@@ -442,7 +450,7 @@ namespace Document_Approval_Project_BE.Controllers
                 subject = d.Subject,
             }).ToList();
 
-            
+
 
             return Ok(new
             {
@@ -474,11 +482,12 @@ namespace Document_Approval_Project_BE.Controllers
         public IHttpActionResult GetDocumentById(int id, int v)
         {
             var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
-                .Any(dc => dc.ApplicantId == v || dc.Status == 1 || dc.Status == 3
-                && db.ApprovalPersons.Any(user => user.DocumentApprovalId == dc.DocumentApprovalId
+                .Any(doc => doc.ApplicantId == v
+                ||
+                doc.Status != 0 && db.ApprovalPersons.Any(user => user.DocumentApprovalId == doc.DocumentApprovalId
                 && user.ApprovalPersonId == v)
             );
-            if(checkUser)
+            if (checkUser)
             {
                 var document = db.DocumentApprovals.FirstOrDefault(p => p.Id == id);
                 if (document != null)
@@ -524,7 +533,7 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpGet]
         [Route("edit/{id}")]
-        public IHttpActionResult GetEditDocumentById(int id,int v)
+        public IHttpActionResult GetEditDocumentById(int id, int v)
         {
             var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
                 .Any(dc => dc.ApplicantId == v
@@ -532,13 +541,14 @@ namespace Document_Approval_Project_BE.Controllers
             if (checkUser)
             {
                 var document = db.DocumentApprovals.FirstOrDefault(dc => dc.Id == id);
-                if(document != null)
+                if (document != null)
                 {
                     var listComment = db.DocumentApprovalComments
                     .Where(c => c.DocumentApprovalId == document.DocumentApprovalId).ToList();
 
                     var documentInfo = new
                     {
+                        state = "true",
                         document,
                         files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                         persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
@@ -650,6 +660,7 @@ namespace Document_Approval_Project_BE.Controllers
                                     Index = index,
                                     ApprovalPersonId = approvalPersonId,
                                     ApprovalPersonName = item["ApprovalPersonName"].ToString(),
+                                    ApprovalPersonEmail = item["ApprovalPersonEmail"].ToString(),
                                     DocumentApprovalId = documentApprovalId,
                                     PersonDuty = personDuty,
                                     IsProcessing = key == "approvers" && index == 1,
@@ -723,7 +734,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                 if (listPerson.ContainsKey("approvers") && listPerson["approvers"].Count > 0)
                 {
-                    if(!document.IsDraft)
+                    if (!document.IsDraft)
                     {
                         var resetProcessing = db.ApprovalPersons.Where(u => u.Index == 1
                         && u.PersonDuty == 1 && u.DocumentApprovalId == document.DocumentApprovalId).FirstOrDefault();
@@ -786,15 +797,17 @@ namespace Document_Approval_Project_BE.Controllers
                             });
                         }
                     }
-
-                    comment = new DocumentApprovalComment
+                    if (!document.IsDraft)
                     {
-                        ApprovalPersonId = document.ApplicantId,
-                        ApprovalPersonName = document.ApplicantName,
-                        DocumentApprovalId = document.DocumentApprovalId,
-                        CommentContent = "Submit the request",
-                        IsFirst = true,
-                    };
+                        comment = new DocumentApprovalComment
+                        {
+                            ApprovalPersonId = document.ApplicantId,
+                            ApprovalPersonName = document.ApplicantName,
+                            DocumentApprovalId = document.DocumentApprovalId,
+                            CommentContent = "Submit the request",
+                            IsFirst = true,
+                        };
+                    }
 
                     db.DocumentApprovalComments.Add(comment);
 
@@ -804,17 +817,23 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         state = "true",
                         dc = document,
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        message = document.IsDraft ? "The request successfully saved" : "The request successfully submited",
                     });
                 }
 
-                comment = new DocumentApprovalComment
+                if (!document.IsDraft)
                 {
-                    ApprovalPersonId = document.ApplicantId,
-                    ApprovalPersonName = document.ApplicantName,
-                    DocumentApprovalId = document.DocumentApprovalId,
-                    CommentContent = "Submit the request",
-                    IsFirst = true,
-                };
+                    comment = new DocumentApprovalComment
+                    {
+                        ApprovalPersonId = document.ApplicantId,
+                        ApprovalPersonName = document.ApplicantName,
+                        DocumentApprovalId = document.DocumentApprovalId,
+                        CommentContent = "Submit the request",
+                        IsFirst = true,
+                    };
+                }
 
                 db.DocumentApprovalComments.Add(comment);
 
@@ -824,12 +843,213 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     state = "true",
                     dc = document,
+                    files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                    persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                    message = document.IsDraft ? "The request successfully saved" : "The request successfully submited",
                 });
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
+        }
+
+        [HttpPost]
+        [Route("all")]
+        public async Task<IHttpActionResult> GetAllListDocument()
+        {
+            var rawMessage = await Request.Content.ReadAsStringAsync();
+            var data = JObject.Parse(rawMessage);
+            var tabName = data["tabName"].ToString();
+            var UserId = (int?)data["userId"];
+
+            var listFilter = data["dataFilter"];
+
+            IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate)
+          .Where(u => db.ApprovalPersons.Any(p => p.DocumentApprovalId == u.DocumentApprovalId && p.ApprovalPersonId == UserId));
+
+            int totalItems = await db.DocumentApprovals.CountAsync();
+
+            if (listFilter != null && listFilter.HasValues)
+            {
+                if (listFilter["requestcode"] != null && !string.IsNullOrEmpty(listFilter["requestcode"].ToString()))
+                {
+                    string requestcode = listFilter["requestcode"].ToString().Trim();
+                    query = query.Where(item => item.RequestCode.Trim().Contains(requestcode));
+                }
+                if (listFilter.SelectToken("documentType") != null && !listFilter["documentType"].ToString().Equals("all"))
+                {
+                    string documentType = listFilter["documentType"].ToString();
+                    if (int.TryParse(documentType, out int documentTypeId))
+                    {
+                        query = query.Where(item => item.DocumentTypeId == documentTypeId);
+                    }
+                }
+                if (listFilter.SelectToken("attorney") != null && !listFilter["attorney"].ToString().Equals("all"))
+                {
+                    string attorney = listFilter["attorney"].ToString();
+                    if (int.TryParse(attorney, out int attorneyId))
+                    {
+                        query = query.Where(item => item.ApplicantId == attorneyId);
+                    }
+                }
+                if (listFilter.SelectToken("authorizer") != null && !listFilter["authorizer"].ToString().Equals("all"))
+                {
+                    string authorizer = listFilter["authorizer"].ToString();
+                    if (int.TryParse(authorizer, out int attorneyId))
+                    {
+                        query = query.Where(item => item.ApplicantId == attorneyId);
+                    }
+                }
+                if (listFilter["subject"] != null && !string.IsNullOrEmpty(listFilter["subject"].ToString()))
+                {
+                    string subject = listFilter["subject"].ToString();
+                    query = query.Where(item => item.Subject.Contains(subject));
+                }
+                if (listFilter["createStart"] != null && listFilter["createEnd"] != null)
+                {
+                    if (DateTime.TryParse(listFilter["createStart"].ToString(), out DateTime createStart)
+                        && DateTime.TryParse(listFilter["createEnd"].ToString(), out DateTime createEnd))
+                    {
+                        createEnd = createEnd.Date.AddDays(1).AddSeconds(-1);
+                        query = query.Where(item => item.CreateDate >= createStart && item.CreateDate <= createEnd);
+                    }
+                }
+                if (!listFilter["department"].Equals("all"))
+                {
+                    string department = listFilter["department"].ToString();
+                    if (int.TryParse(department, out int departmentId))
+                    {
+                        query = query.Where(item => item.DepartmentId == departmentId);
+                        var departmentParenNode = db.Departments.FirstOrDefault(d => d.Id == departmentId);
+                        // Nếu section được chọn
+                        if (listFilter.SelectToken("section") != null && !listFilter["section"].ToString().Equals("all"))
+                        {
+                            string section = listFilter["section"].ToString();
+                            if (int.TryParse(section, out int sectionId))
+                            {
+                                var sectionInDepartment = db.Departments.FirstOrDefault(s => s.ParentNode == departmentParenNode.DepartmentId && s.Id == sectionId);
+                                if (sectionInDepartment != null)
+                                {
+                                    query = query.Where(item => item.SectionId == sectionInDepartment.Id);
+                                    var sectionParenNode = db.Departments.FirstOrDefault(s => s.Id == sectionId);
+
+                                    if (listFilter.SelectToken("unit") != null && !listFilter["unit"].ToString().Equals("all"))
+                                    {
+                                        string unit = listFilter["unit"].ToString();
+
+                                        if (int.TryParse(unit, out int unitId))
+                                        {
+                                            var unitInSection = db.Departments.FirstOrDefault(u => u.ParentNode == sectionParenNode.DepartmentId && u.Id == unitId);
+                                            if (unitInSection != null)
+                                            {
+                                                query = query.Where(item => item.UnitId == unitId);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!listFilter["status"].ToString().Equals("all") && listFilter["status"] != null)
+                {
+                    var status = listFilter["status"].ToString();
+                    query = query.Where(item => item.Status.ToString().Equals(status));
+                }
+            }
+            else
+            {
+                Regex regex = new Regex(@"status(\d+)");
+
+                Match match = regex.Match(tabName);
+
+                string numberStr = match.Groups[1].Value;
+                if (tabName.Equals("status" + numberStr))
+                {
+                    query = query.Where(item => item.Status.ToString().Equals(numberStr));
+                    totalItems = await query.CountAsync();
+                }
+            }
+
+            if (!tabName.IsEmpty() && !tabName.Equals("all"))
+            {
+                if (tabName.Equals("sendToMe"))
+                {
+                    var userDocumentApprovalIds = db.ApprovalPersons
+                    .Where(ap => ap.ApprovalPersonId == UserId)
+                    .Select(ap => ap.DocumentApprovalId)
+                    .ToList();
+                    query = query.Where(item => userDocumentApprovalIds.Contains(item.DocumentApprovalId));
+                    totalItems = await query.CountAsync();
+                }
+                if (tabName.Equals("sendByMe"))
+                {
+                    query = query.Where(item => item.ApplicantId == UserId);
+                    totalItems = await query.CountAsync();
+                }
+                if (tabName.Equals("shareWithMe"))
+                {
+                    query = query.Where(item => item.SharingToUsers == UserId);
+                    totalItems = await query.CountAsync();
+                }
+            }
+
+            if (UserId != null)
+            {
+                query = query.Where(u =>
+                    u.ApplicantId == UserId ||
+                    (u.Status != 0 ||
+                        u.Status == 1 || db.ApprovalPersons.Any(p =>
+                            p.DocumentApprovalId == u.DocumentApprovalId &&
+                            p.ApprovalPersonId == UserId &&
+                            u.Status == 1)
+
+                    )
+                );
+            }
+
+            var dcapproval = query.ToList();
+            if (dcapproval.Count == 0)
+            {
+                return Ok(new
+                {
+                    state = "false",
+                    listDcapproval = new List<object>(),
+                });
+            }
+
+            var listDcapproval = dcapproval.Select((d, index) => new
+            {
+                key = index + 1,
+                d.Id,
+                d.RequestCode,
+                d.DocumentApprovalId,
+                d.ApplicantId,
+                createBy = d.ApplicantName,
+                categories = d.CategoryName,
+                createDate = d.CreateDate.ToString("dd/MM/yyyy"),
+                department = d.DepartmentName,
+                section = d.SectionName,
+                unit = d.UnitName,
+                documentType = d.DocumentTypeName,
+                Processing = d.ProcessingBy,
+                isProcessing = CheckIsProcessing(UserId, d.DocumentApprovalId),
+                d.RelatedProposal,
+                d.Status,
+                d.IsDraft,
+                d.IsReject,
+                subject = d.Subject,
+            }).ToList();
+
+
+
+            return Ok(new
+            {
+                state = "true",
+                listDcapproval,
+                totalItems,
+            });
         }
     }
 }

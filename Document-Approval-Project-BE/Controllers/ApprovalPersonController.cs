@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.UI.WebControls;
@@ -70,6 +71,7 @@ namespace Document_Approval_Project_BE.Controllers
                         {
                             state = "true",
                             approvers = getApprovers,
+                            message = "Request " + updateStatus.RequestCode + " has been approved by " + approvalPerson.ApprovalPersonName,
                             comments = listComment.OrderByDescending(d => d.CreateDate)
                             .Where(c => c.ParentNode == null)
                             .Select(c => new
@@ -118,6 +120,7 @@ namespace Document_Approval_Project_BE.Controllers
                             return Ok(new
                             {
                                 state = "true",
+                                message = "Request " + updateStatus.RequestCode + " has been approved by " + approvalPerson.ApprovalPersonName,
                                 document = updateStatus,
                                 approvers = nextApprovers,
                                 signers = listSigner,
@@ -204,7 +207,9 @@ namespace Document_Approval_Project_BE.Controllers
                         return Ok(new
                         {
                             state = "true",
+                            document = updateStatus,
                             signers = getSigners,
+                            message = "Request " + updateStatus.RequestCode + " has been signed by " + approvalPerson.ApprovalPersonName,
                             comments = listComment.OrderByDescending(d => d.CreateDate)
                             .Where(c => c.ParentNode == null)
                             .Select(c => new
@@ -245,6 +250,7 @@ namespace Document_Approval_Project_BE.Controllers
                         {
                             state = "true",
                             document = updateStatus,
+                            message = "Request " + updateStatus.RequestCode + " has been signed by " + approvalPerson.ApprovalPersonName,
                             signers = nextSigners,
                             comments = listComment.OrderByDescending(d => d.CreateDate)
                             .Where(c => c.ParentNode == null)

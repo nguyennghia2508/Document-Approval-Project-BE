@@ -34,13 +34,12 @@ namespace Document_Approval_Project_BE.Controllers
             MemoryStream stream = new MemoryStream();
             object jsonResult = new object();
 
-            if (jsonObject != null && jsonObject.ContainsKey("document"))
+            if (jsonObject != null && (jsonObject.ContainsKey("document") || jsonObject.ContainsKey("documentId")))
             {
-                if (bool.TryParse(jsonObject["isFileName"], out bool isFileName) &&
-                    Guid.TryParse(jsonObject["documenApprovaltId"], out Guid documentApprovalId) &&
-                    Guid.TryParse(jsonObject["fileId"], out Guid fileId))
+                if (jsonObject.ContainsKey("documenApprovaltId") && jsonObject.ContainsKey("fileId"))
                 {
-                    if (isFileName)
+                    if (Guid.TryParse(jsonObject["documenApprovaltId"], out Guid documentApprovalId) &&
+                    Guid.TryParse(jsonObject["fileId"], out Guid fileId))
                     {
                         var fileExist = db.DocumentApprovalFiles.FirstOrDefault(file =>
                             file.DocumentApprovalId == documentApprovalId && file.DocumentFileId == fileId);
@@ -87,7 +86,7 @@ namespace Document_Approval_Project_BE.Controllers
             PdfRenderer pdfviewer = new PdfRenderer();
             MemoryStream stream = new MemoryStream();
 
-            if (jsonObject != null && jsonObject.ContainsKey("fileName"))
+            if (jsonObject != null && jsonObject.ContainsKey("documentApprovalId") && jsonObject.ContainsKey("fileId"))
             {
                 if (Guid.TryParse(jsonObject["documentApprovalId"], out Guid documentApprovalId) &&
                     Guid.TryParse(jsonObject["fileId"], out Guid fileId))
@@ -119,60 +118,54 @@ namespace Document_Approval_Project_BE.Controllers
 
                             if(File.Exists(documentPath))
                             {
-                                //Load the PDF document.
-                                FileStream docStream = new FileStream(documentPath, FileMode.Open, FileAccess.Read);
-                                PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
-                                //Load the form from the loaded PDF document.
-                                PdfLoadedForm form = loadedDocument.Form;
-                                //Load the form field collections from the form.
-                                PdfLoadedFormFieldCollection fieldCollection = form.Fields as PdfLoadedFormFieldCollection;
-                                PdfLoadedField loadedField = null;
-
-                                foreach (PdfLoadedField field in fieldCollection)
+                                using (FileStream docStream = new FileStream(documentPath, FileMode.Open, FileAccess.ReadWrite))
                                 {
-                                    if (field.Name != null && field is PdfLoadedTextBoxField)
+                                    PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
+                                    PdfLoadedForm form = loadedDocument.Form;
+                                    PdfLoadedFormFieldCollection fieldCollection = form.Fields as PdfLoadedFormFieldCollection;
+
+                                    foreach (PdfLoadedField field in fieldCollection)
                                     {
-                                        string fieldName = field.Name;
-
-                                        if (fieldName.StartsWith("[{RequestCode") && fieldName.EndsWith("}]"))
+                                        if (field.Name != null && field is PdfLoadedTextBoxField)
                                         {
-                                            (loadedField as PdfLoadedTextBoxField).Text = "Request Code";
-                                        }
+                                            string fieldName = field.Name;
 
-                                        if (fieldName.StartsWith("[{Title") && fieldName.EndsWith("}]"))
-                                        {
-                                            (field as PdfLoadedTextBoxField).Text = "Title";
-                                        }
+                                            if (fieldName.StartsWith("[{RequestCode") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Request Code";
+                                            }
 
-                                        if (fieldName.StartsWith("[{Signature") && fieldName.EndsWith("}]"))
-                                        {
-                                            (field as PdfLoadedTextBoxField).Text = "Signature";
-                                        }
+                                            if (fieldName.StartsWith("[{Title") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Title";
+                                            }
 
-                                        if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
-                                        {
-                                            (field as PdfLoadedTextBoxField).Text = "Date";
-                                        }
+                                            if (fieldName.StartsWith("[{Signature") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Signature";
+                                            }
 
-                                        if (fieldName.StartsWith("[{SignerJobTitle") && fieldName.EndsWith("}]"))
-                                        {
-                                            (field as PdfLoadedTextBoxField).Text = "Title";
-                                        }
+                                            if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Date";
+                                            }
 
-                                        if (fieldName.StartsWith("[{SignerName") && fieldName.EndsWith("}]"))
-                                        {
-                                            (field as PdfLoadedTextBoxField).Text = "Nghia";
+                                            if (fieldName.StartsWith("[{SignerJobTitle") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Title";
+                                            }
+
+                                            if (fieldName.StartsWith("[{SignerName") && fieldName.EndsWith("}]"))
+                                            {
+                                                (field as PdfLoadedTextBoxField).Text = "Nghia";
+                                            }
                                         }
                                     }
-                                }
-                                docStream.Close();
-                                using (FileStream outputFileStream = new FileStream(documentPath, FileMode.Open, FileAccess.ReadWrite))
-                                {
-                                    // Save the modified PDF document to the outputFileStream
-                                    loadedDocument.Save(outputFileStream);
+
+                                    loadedDocument.Save(docStream);
+                                    loadedDocument.Close(true);
                                 }
 
-                                loadedDocument.Close();
                             }
                         }
                         else

@@ -16,7 +16,6 @@ using System.Web.Http.Cors;
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/department")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DepartmentController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

@@ -31,7 +31,6 @@ using static System.Collections.Specialized.BitVector32;
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/documentapproval")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DocumentApprovalsController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
@@ -95,7 +94,7 @@ namespace Document_Approval_Project_BE.Controllers
                 db.SaveChanges();
 
                 var departmentCode = db.Departments.FirstOrDefault(d => d.Id == dcument.DepartmentId).DepartmentCode;
-                dcument.RequestCode = $"{dcument.Id}-IDOC-{departmentCode}-{DateTime.Now.Year}";
+                dcument.RequestCode = $"{dcument.Id:D5}-IDOC-{departmentCode}-{DateTime.Now.Year}";
                 db.SaveChanges();
 
                 var approvalPerson = JObject.Parse(httpRequest.Form["ApprovalPerson"]);
@@ -273,6 +272,8 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     string requestcode = listFilter["requestcode"].ToString().Trim();
                     query = query.Where(item => item.RequestCode.Trim().Contains(requestcode));
+                    totalItems = await query.CountAsync();
+
                 }
                 if (listFilter.SelectToken("documentType") != null && !listFilter["documentType"].ToString().Equals("all"))
                 {
@@ -280,6 +281,7 @@ namespace Document_Approval_Project_BE.Controllers
                     if (int.TryParse(documentType, out int documentTypeId))
                     {
                         query = query.Where(item => item.DocumentTypeId == documentTypeId);
+                        totalItems = await query.CountAsync();
                     }
                 }
                 if (listFilter.SelectToken("attorney") != null && !listFilter["attorney"].ToString().Equals("all"))
@@ -288,6 +290,7 @@ namespace Document_Approval_Project_BE.Controllers
                     if (int.TryParse(attorney, out int attorneyId))
                     {
                         query = query.Where(item => item.ApplicantId == attorneyId);
+                        totalItems = await query.CountAsync();
                     }
                 }
                 if (listFilter.SelectToken("authorizer") != null && !listFilter["authorizer"].ToString().Equals("all"))
@@ -296,12 +299,14 @@ namespace Document_Approval_Project_BE.Controllers
                     if (int.TryParse(authorizer, out int attorneyId))
                     {
                         query = query.Where(item => item.ApplicantId == attorneyId);
+                        totalItems = await query.CountAsync();
                     }
                 }
                 if (listFilter["subject"] != null && !string.IsNullOrEmpty(listFilter["subject"].ToString()))
                 {
                     string subject = listFilter["subject"].ToString();
                     query = query.Where(item => item.Subject.Contains(subject));
+                    totalItems = await query.CountAsync();
                 }
                 if (listFilter["createStart"] != null && listFilter["createEnd"] != null)
                 {
@@ -310,6 +315,7 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         createEnd = createEnd.Date.AddDays(1).AddSeconds(-1);
                         query = query.Where(item => item.CreateDate >= createStart && item.CreateDate <= createEnd);
+                        totalItems = await query.CountAsync();
                     }
                 }
                 if (!listFilter["department"].Equals("all"))
@@ -319,7 +325,7 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         query = query.Where(item => item.DepartmentId == departmentId);
                         var departmentParenNode = db.Departments.FirstOrDefault(d => d.Id == departmentId);
-                        // Nếu section được chọn
+                        totalItems = await query.CountAsync();
                         if (listFilter.SelectToken("section") != null && !listFilter["section"].ToString().Equals("all"))
                         {
                             string section = listFilter["section"].ToString();
@@ -330,7 +336,7 @@ namespace Document_Approval_Project_BE.Controllers
                                 {
                                     query = query.Where(item => item.SectionId == sectionInDepartment.Id);
                                     var sectionParenNode = db.Departments.FirstOrDefault(s => s.Id == sectionId);
-
+                                    totalItems = await query.CountAsync();
                                     if (listFilter.SelectToken("unit") != null && !listFilter["unit"].ToString().Equals("all"))
                                     {
                                         string unit = listFilter["unit"].ToString();
@@ -341,6 +347,7 @@ namespace Document_Approval_Project_BE.Controllers
                                             if (unitInSection != null)
                                             {
                                                 query = query.Where(item => item.UnitId == unitId);
+                                                totalItems = await query.CountAsync();
                                             }
                                         }
                                     }
@@ -749,7 +756,9 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     var fileApprovals = new List<Object>();
                     var listFile = db.DocumentApprovalFiles.Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList();
-                    var checkFileList = new List<Object>();
+                    var filesDelete = new List<DocumentApprovalFile>();
+                    HashSet<(string, int)> processeFile = new HashSet<(string, int)>();
+
                     for (int i = 0; i < files.Count; i++)
                     {
                         HttpPostedFile fileUpload = files[i];
@@ -776,27 +785,58 @@ namespace Document_Approval_Project_BE.Controllers
                             DocumentType = files.GetKey(i).Equals("approve") ? 1 : 2,
                         };
 
-                        var existFile = listFile.Where(f => f.FileName == fileApproval.FileName
-                        && f.DocumentType == fileApproval.DocumentType).FirstOrDefault();
+                        var fileKey = (fileApproval.FileName, fileApproval.DocumentType);
 
-                        if (existFile == null)
+                        if (!processeFile.Contains(fileKey))
                         {
-                            using (var stream = new FileStream(fullPath, FileMode.Create))
-                            {
-                                await fileUpload.InputStream.CopyToAsync(stream);
-                            }
+                            processeFile.Add(fileKey);
 
-                            db.DocumentApprovalFiles.Add(new DocumentApprovalFile
+                            var existFile = listFile.FirstOrDefault(f => f.FileName == fileApproval.FileName
+                            && f.DocumentType == fileApproval.DocumentType);
+
+                            if (existFile == null)
                             {
-                                FileName = fileApproval.FileName,
-                                FileSize = fileApproval.FileSize,
-                                FilePath = fileApproval.FilePath,
-                                FileType = fileApproval.FileType,
-                                DocumentApprovalId = fileApproval.DocumentApprovalId,
-                                DocumentType = fileApproval.DocumentType
-                            });
+                                using (var stream = new FileStream(fullPath, FileMode.Create))
+                                {
+                                    await fileUpload.InputStream.CopyToAsync(stream);
+                                }
+
+                                db.DocumentApprovalFiles.Add(new DocumentApprovalFile
+                                {
+                                    FileName = fileApproval.FileName,
+                                    FileSize = fileApproval.FileSize,
+                                    FilePath = fileApproval.FilePath,
+                                    FileType = fileApproval.FileType,
+                                    DocumentApprovalId = fileApproval.DocumentApprovalId,
+                                    DocumentType = fileApproval.DocumentType
+                                });
+
+                                db.SaveChanges();
+                            }
                         }
                     }
+
+                    foreach (var file in listFile)
+                    {
+                        var fileKey = (file.FileName, file.DocumentType);
+                        if (!processeFile.Contains(fileKey))
+                        {
+                            filesDelete.Add(file);
+                        }
+                    }
+
+                    foreach (var fileToDelete in filesDelete)
+                    {
+                        string deleteFilePath = Path.Combine(document.DocumentApprovalId.ToString(), fileToDelete.FileName);
+                        string filePathToDelete = GetFilePath(deleteFilePath);
+                        File.Delete(filePathToDelete);
+
+                        db.DocumentApprovalFiles.Remove(fileToDelete);
+
+                        db.SaveChanges();
+
+                    }
+
                     if (!document.IsDraft)
                     {
                         comment = new DocumentApprovalComment

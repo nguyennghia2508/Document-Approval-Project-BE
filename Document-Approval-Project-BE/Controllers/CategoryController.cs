@@ -10,7 +10,6 @@ using System.Web.Http.Cors;
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/category")]
-    [EnableCors(origins:"*",headers:"*",methods:"*")]
 
     public class CategoryController : ApiController
     {

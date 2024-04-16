@@ -13,7 +13,6 @@ using System.Xml.Linq;
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/person")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ApprovalPersonController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

@@ -17,7 +17,6 @@ using System.Xml.Linq;
 namespace Document_Approval_Project_BE.Controllers
 {
     [RoutePrefix("api/comment")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class CommentController : ApiController
     {
         private readonly ProjectDBContext db = new ProjectDBContext();

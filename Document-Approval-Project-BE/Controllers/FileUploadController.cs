@@ -1,7 +1,9 @@
 ﻿using Document_Approval_Project_BE.Models;
 using Newtonsoft.Json;
+using Syncfusion.DocIO.DLS;
 using Syncfusion.EJ2.PdfViewer;
 using Syncfusion.Pdf.Parsing;
+using Syncfusion.OfficeChartToImageConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,10 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
+using Syncfusion.DocIO;
+using Syncfusion.DocToPDFConverter;
+using Syncfusion.Pdf;
+using Syncfusion.OfficeChart;
 
 namespace Document_Approval_Project_BE.Controllers
 {
@@ -50,8 +56,27 @@ namespace Document_Approval_Project_BE.Controllers
 
                             if (!string.IsNullOrEmpty(documentPath) && File.Exists(documentPath))
                             {
-                                byte[] bytes = File.ReadAllBytes(documentPath);
-                                stream = new MemoryStream(bytes);
+                                if(fileExist.FileType.Equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
+                                {
+                                    WordDocument wordDocument = new WordDocument(documentPath, FormatType.Docx);
+                                    wordDocument.ChartToImageConverter = new ChartToImageConverter();
+                                    wordDocument.ChartToImageConverter.ScalingMode = ScalingMode.Normal;
+
+                                    DocToPDFConverter converter = new DocToPDFConverter();
+                                    converter.Settings.EnableFastRendering = true;
+
+                                    PdfDocument pdfDocument = converter.ConvertToPDF(wordDocument);
+
+                                    MemoryStream pdfStream = new MemoryStream();
+                                    pdfDocument.Save(pdfStream);
+
+                                    stream = new MemoryStream(pdfStream.ToArray());
+                                }
+                                else
+                                {
+                                    byte[] bytes = File.ReadAllBytes(documentPath);
+                                    stream = new MemoryStream(bytes);
+                                }
                             }
                             else
                             {

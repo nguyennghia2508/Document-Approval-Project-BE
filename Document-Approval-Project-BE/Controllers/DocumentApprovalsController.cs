@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Globalization;
 using System.IO;
@@ -486,8 +487,29 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpGet]
         [Route("view/{id}")]
-        public IHttpActionResult GetDocumentById(int id, int v)
+        public IHttpActionResult GetDocumentById(int? id, int? v)
         {
+            if (id == null)
+            {
+                var errorResponse = new
+                {
+                    state = "false",
+                    message = "The request is invalid"
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse));
+            }
+
+            // Kiểm tra xem tham số v có giá trị null không
+            if (v == null)
+            {
+                var errorResponse = new
+                {
+                    state = "false",
+                    message = "The request is invalid"
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse));
+            }
+
             var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
                 .Any(doc => doc.ApplicantId == v
                 ||
@@ -505,7 +527,8 @@ namespace Document_Approval_Project_BE.Controllers
                     var documentInfo = new
                     {
                         document,
-                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId)
+                            .OrderByDescending(p => p.CreateDate).ToList(),
                         persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                         comments = listComment
                         .OrderByDescending(d => d.CreateDate)
@@ -540,8 +563,29 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpGet]
         [Route("edit/{id}")]
-        public IHttpActionResult GetEditDocumentById(int id, int v)
+        public IHttpActionResult GetEditDocumentById(int? id, int? v)
         {
+            if (id == null)
+            {
+                var errorResponse = new
+                {
+                    state = "false",
+                    message = "The request is invalid"
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse));
+            }
+
+            // Kiểm tra xem tham số v có giá trị null không
+            if (v == null)
+            {
+                var errorResponse = new
+                {
+                    state = "false",
+                    message = "The request is invalid"
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse));
+            }
+
             var checkUser = db.DocumentApprovals.Where(dc => dc.Id == id)
                 .Any(dc => dc.ApplicantId == v
             );
@@ -557,7 +601,8 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         state = "true",
                         document,
-                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId)
+                            .OrderByDescending(p => p.CreateDate).ToList(),
                         persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                     };
                     return Ok(documentInfo);
@@ -813,6 +858,24 @@ namespace Document_Approval_Project_BE.Controllers
 
                                 db.SaveChanges();
                             }
+                            else
+                            {
+                                var listFileDeleteJson = httpRequest.Form["listFileDelete"];
+                                var listFileDelete = JsonConvert.DeserializeObject<List<DocumentApprovalFile>>(listFileDeleteJson);
+                                if(listFileDelete != null && listFileDelete.Count > 0)
+                                {
+                                    foreach (var file in listFileDelete)
+                                    {
+                                        if (file.DocumentFileId == existFile.DocumentFileId)
+                                        {
+                                            using (var stream = new FileStream(fullPath, FileMode.Create))
+                                            {
+                                                await fileUpload.InputStream.CopyToAsync(stream);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -857,7 +920,8 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         state = "true",
                         dc = document,
-                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                        files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId)
+                            .OrderByDescending(p => p.CreateDate).ToList(),
                         persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                         message = document.IsDraft ? "The request successfully saved" : "The request successfully submited",
                     });
@@ -883,7 +947,8 @@ namespace Document_Approval_Project_BE.Controllers
                 {
                     state = "true",
                     dc = document,
-                    files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId).ToList(),
+                    files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == document.DocumentApprovalId)
+                        .OrderByDescending(p => p.CreateDate).ToList(),
                     persons = db.ApprovalPersons.OrderByDescending(p => p.PersonDuty).OrderBy(p => p.Index).Where(p => p.DocumentApprovalId == document.DocumentApprovalId).ToList(),
                     message = document.IsDraft ? "The request successfully saved" : "The request successfully submited",
                 });

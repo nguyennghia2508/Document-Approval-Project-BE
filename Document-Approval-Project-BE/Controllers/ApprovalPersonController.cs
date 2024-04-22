@@ -43,7 +43,7 @@ namespace Document_Approval_Project_BE.Controllers
                 {
 
                     var nextApproval = db.ApprovalPersons
-                    .Where(p => p.Index > approval.Index && p.PersonDuty == 1 && p.IsApprove == false)
+                    .Where(p => p.Index > approval.Index && p.DocumentApprovalId == approval.DocumentApprovalId && p.PersonDuty == 1 && p.IsApprove == false)
                     .OrderBy(p => p.Index)
                     .FirstOrDefault();
 
@@ -90,7 +90,7 @@ namespace Document_Approval_Project_BE.Controllers
                     else
                     {
                         var nextSigner = db.ApprovalPersons
-                        .Where(p => p.PersonDuty == 2 && p.IsSign == false 
+                        .Where(p => p.PersonDuty == 2 && p.IsSign == false && p.Index == 1
                         && p.DocumentApprovalId == approval.DocumentApprovalId)
                         .OrderBy(p => p.Index)
                         .FirstOrDefault();
@@ -178,7 +178,7 @@ namespace Document_Approval_Project_BE.Controllers
                 if (signed != null)
                 {
                     var nextSigned = db.ApprovalPersons
-                    .Where(p => p.Index > signed.Index && p.PersonDuty == 2 && p.IsSign == false)
+                    .Where(p => p.Index > signed.Index && p.PersonDuty == 2 && p.DocumentApprovalId == signed.DocumentApprovalId && p.IsSign == false)
                     .OrderBy(p => p.Index)
                     .FirstOrDefault();
 
@@ -208,69 +208,86 @@ namespace Document_Approval_Project_BE.Controllers
                         var files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == updateStatus.DocumentApprovalId).ToList();
                         foreach (var file in files)
                         {
-                            var filePath = Path.Combine(HostingEnvironment.MapPath("~/"), file.FilePath);
-                            using (FileStream docStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
+                            if(file.DocumentType == 1)
                             {
-                                PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
-                                PdfLoadedForm form = loadedDocument.Form;
-                                if (form != null && form.Fields != null)
+                                var filePath = Path.Combine(HostingEnvironment.MapPath("~/"), file.FilePath);
+                                if(File.Exists(filePath))
                                 {
-                                    PdfLoadedFormFieldCollection fieldCollection = form.Fields;
-                                    if (fieldCollection.Count > 0)
+                                    using (FileStream docStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
                                     {
-                                        foreach (PdfLoadedField field in fieldCollection)
+                                        PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
+                                        PdfLoadedForm form = loadedDocument.Form;
+                                        if (form != null && form.Fields != null)
                                         {
-                                            if (field.Name != null && field is PdfLoadedTextBoxField)
+                                            PdfLoadedFormFieldCollection fieldCollection = form.Fields;
+                                            if (fieldCollection.Count > 0)
                                             {
-                                                string fieldName = field.Name;
-
-                                                if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
+                                                foreach (PdfLoadedField field in fieldCollection)
                                                 {
-                                                    int startIndex = "[{SignedDate".Length; // Độ dài của "[{SignerName"
-                                                    int dotIndex = fieldName.IndexOf('.', startIndex); // Tìm vị trí của dấu chấm (.) sau "SignerName"
-
-                                                    if (dotIndex != -1)
+                                                    if (field.Name != null && field is PdfLoadedTextBoxField)
                                                     {
-                                                        // Lấy phần số giữa "SignerName" và dấu chấm (.)
-                                                        string signerNumber = fieldName.Substring(startIndex, dotIndex - startIndex);
+                                                        string fieldName = field.Name;
 
-                                                        if (int.TryParse(signerNumber, out int signerIndex))
+                                                        if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
                                                         {
-                                                            if (signerIndex == signed.Index)
+                                                            int startIndex = "[{SignedDate".Length; // Độ dài của "[{SignerName"
+                                                            int dotIndex = fieldName.IndexOf('.', startIndex); // Tìm vị trí của dấu chấm (.) sau "SignerName"
+
+                                                            if (dotIndex != -1)
                                                             {
-                                                                (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
-                                                                (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).BorderWidth = 0;
-                                                                (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
-                                                                (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                // Lấy phần số giữa "SignerName" và dấu chấm (.)
+                                                                int signerNumber = int.Parse(fieldName.Substring(startIndex, dotIndex - startIndex));
+
+                                                                if (signerNumber == signed.Index)
+                                                                {
+                                                                    if ((field as PdfLoadedTextBoxField).ReadOnly)
+                                                                    {
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = false;
+                                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                    }
+                                                                }
                                                             }
                                                         }
+
+                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
                                                     }
                                                 }
-
-                                                (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
-                                                (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).BorderWidth = 0;
-                                                (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                form.SetDefaultAppearance(false);
+                                                //loadedDocument.Form.Flatten = true;
+                                                loadedDocument.Save(docStream);
+                                                loadedDocument.Close(true);
+                                            }
+                                            else
+                                            {
+                                                loadedDocument.Close(true);
                                             }
                                         }
-                                        form.SetDefaultAppearance(false);
-                                        //loadedDocument.Form.Flatten = true;
-                                        loadedDocument.Save(docStream);
-                                        loadedDocument.Close(true);
+                                        else
+                                        {
+                                            loadedDocument.Close(true);
+                                        }
                                     }
-                                    else
-                                    {
-                                        loadedDocument.Close(true);
-                                    }
-                                }
-                                else
-                                {
-                                    loadedDocument.Close(true);
                                 }
                             }
                         }
@@ -320,71 +337,86 @@ namespace Document_Approval_Project_BE.Controllers
                         var files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == updateStatus.DocumentApprovalId).ToList();
                         foreach (var file in files)
                         {
-                            var filePath = Path.Combine(HostingEnvironment.MapPath("~/"), file.FilePath);
-                            using (FileStream docStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
+                            if (file.DocumentType == 1)
                             {
-                                PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
-                                PdfLoadedForm form = loadedDocument.Form;
-                                if (form != null && form.Fields != null)
+                                var filePath = Path.Combine(HostingEnvironment.MapPath("~/"), file.FilePath);
+                                if (File.Exists(filePath))
                                 {
-                                    PdfLoadedFormFieldCollection fieldCollection = form.Fields;
-                                    if (fieldCollection.Count > 0)
+                                    using (FileStream docStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
                                     {
-                                        foreach (PdfLoadedField field in fieldCollection)
+                                        PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
+                                        PdfLoadedForm form = loadedDocument.Form;
+                                        if (form != null && form.Fields != null)
                                         {
-                                            if (field.Name != null && field is PdfLoadedTextBoxField)
+                                            PdfLoadedFormFieldCollection fieldCollection = form.Fields;
+                                            if (fieldCollection.Count > 0)
                                             {
-                                                string fieldName = field.Name;
-
-                                                if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
+                                                foreach (PdfLoadedField field in fieldCollection)
                                                 {
-                                                    int startIndex = "[{SignedDate".Length; // Độ dài của "[{SignerName"
-                                                    int dotIndex = fieldName.IndexOf('.', startIndex); // Tìm vị trí của dấu chấm (.) sau "SignerName"
-
-                                                    if (dotIndex != -1)
+                                                    if (field.Name != null && field is PdfLoadedTextBoxField)
                                                     {
-                                                        // Lấy phần số giữa "SignerName" và dấu chấm (.)
-                                                        string signerNumber = fieldName.Substring(startIndex, dotIndex - startIndex);
+                                                        string fieldName = field.Name;
 
-                                                        if (int.TryParse(signerNumber, out int signerIndex))
+                                                        if (fieldName.StartsWith("[{SignedDate") && fieldName.EndsWith("}]"))
                                                         {
-                                                            if (signerIndex == signed.Index)
+                                                            int startIndex = "[{SignedDate".Length; // Độ dài của "[{SignerName"
+                                                            int dotIndex = fieldName.IndexOf('.', startIndex); // Tìm vị trí của dấu chấm (.) sau "SignerName"
+
+                                                            if (dotIndex != -1)
                                                             {
-                                                                (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
-                                                                (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).BorderWidth = 0;
-                                                                (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
-                                                                (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
-                                                                (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                // Lấy phần số giữa "SignerName" và dấu chấm (.)
+                                                                int signerNumber = int.Parse(fieldName.Substring(startIndex, dotIndex - startIndex));
+
+                                                                if (signerNumber == signed.Index)
+                                                                {
+                                                                    if ((field as PdfLoadedTextBoxField).ReadOnly)
+                                                                    {
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = false;
+                                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                                        (field as PdfLoadedTextBoxField).Text = DateTime.Now.ToString("dd/MM/yyyy");
+                                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                                    }
+                                                                }
                                                             }
                                                         }
+
+                                                        (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
+                                                        (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).BorderWidth = 0;
+                                                        (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
+                                                        (field as PdfLoadedTextBoxField).ReadOnly = true;
                                                     }
                                                 }
-
-                                                (field as PdfLoadedTextBoxField).Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 9, PdfFontStyle.Bold);
-                                                (field as PdfLoadedTextBoxField).BorderColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).BackColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).BorderWidth = 0;
-                                                (field as PdfLoadedTextBoxField).ForeColor = Color.Empty;
-                                                (field as PdfLoadedTextBoxField).ReadOnly = true;
+                                                form.SetDefaultAppearance(false);
+                                                //loadedDocument.Form.Flatten = true;
+                                                loadedDocument.Save(docStream);
+                                                loadedDocument.Close(true);
+                                            }
+                                            else
+                                            {
+                                                loadedDocument.Close(true);
                                             }
                                         }
-                                        form.SetDefaultAppearance(false);
-                                        loadedDocument.Save(docStream);
-                                        loadedDocument.Close(true);
+                                        else
+                                        {
+                                            loadedDocument.Close(true);
+                                        }
                                     }
-                                    else
-                                    {
-                                        form.SetDefaultAppearance(false);
-                                        loadedDocument.Save(docStream);
-                                        loadedDocument.Close(true);
-                                    }
-                                }
-                                else
-                                {
-                                    loadedDocument.Save(docStream);
-                                    loadedDocument.Close(true);
                                 }
                             }
                         }

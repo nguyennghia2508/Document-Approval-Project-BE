@@ -157,22 +157,17 @@ namespace Document_Approval_Project_BE.Controllers
                             {
                                 if (fileExist.FileType.Equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
                                 {
-                                    File.Delete(documentPath);
-
                                     string fileName = Path.GetFileNameWithoutExtension(fileExist.FileName);
 
-                                    string fileExtension = Path.GetExtension(fileExist.FileName);
+                                    string newFileName = fileName + "_" + DateTime.Now.Ticks.ToString() + ".pdf";
 
-                                    string tempFilePath = Path.Combine(Filepath, fileName + ".pdf");
+                                    string tempFilePath = Path.Combine(Filepath, newFileName);
 
                                     byte[] pdfBytes = Convert.FromBase64String(jsonObject["documentData"]);
 
                                     File.WriteAllBytes(tempFilePath, pdfBytes);
 
-                                    string newFileName = fileName + ".pdf";
-                                    string newFilePath = Path.Combine(Filepath, newFileName);
-
-                                    fileExist.FileName = newFileName;
+                                    fileExist.FileName = fileName + ".pdf";
                                     fileExist.FileType = "application/pdf";
                                     fileExist.FilePath = "Upload/Files/" +
                                         fileExist.DocumentApprovalId.ToString() + "/" + newFileName;
@@ -260,6 +255,8 @@ namespace Document_Approval_Project_BE.Controllers
                                                 }
                                             }
                                         }
+                                        File.Delete(documentPath);
+
                                     }
                                     else
                                     {
@@ -268,14 +265,22 @@ namespace Document_Approval_Project_BE.Controllers
                                 }
                                 else
                                 {
+                                    string fileName = Path.GetFileNameWithoutExtension(fileExist.FileName);
+
+                                    string fileExtension = Path.GetExtension(fileExist.FileName);
+
+                                    string alterPath = "Upload/Files/" +
+                                        fileExist.DocumentApprovalId.ToString() + "/" + fileName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+
+                                    string fullPath = Path.Combine(HostingEnvironment.MapPath("~/"),alterPath);
 
                                     byte[] pdfBytes = Convert.FromBase64String(jsonObject["documentData"]);
 
-                                    File.WriteAllBytes(documentPath, pdfBytes);
+                                    File.WriteAllBytes(fullPath, pdfBytes);
 
-                                    if (File.Exists(documentPath))
+                                    if (File.Exists(fullPath))
                                     {
-                                        using (FileStream docStream = new FileStream(documentPath, FileMode.Open, FileAccess.ReadWrite))
+                                        using (FileStream docStream = new FileStream(fullPath, FileMode.Open, FileAccess.ReadWrite))
                                         {
                                             PdfLoadedDocument loadedDocument = new PdfLoadedDocument(docStream);
                                             PdfLoadedForm form = loadedDocument.Form;
@@ -367,6 +372,9 @@ namespace Document_Approval_Project_BE.Controllers
                                                 }
                                             }
                                         }
+                                        File.Delete(documentPath);
+                                        fileExist.FilePath = alterPath;
+                                        db.SaveChanges();
                                     }
                                     else
                                     {

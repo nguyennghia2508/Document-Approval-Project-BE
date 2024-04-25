@@ -23,6 +23,7 @@ namespace Document_Approval_Project_BE.Models
         public string JobTitle { get; set; }
         public string Company {  get; set; }
         public Guid DepartmentId { get; set; } = Guid.Empty;
-
+        public string SignatureFileName { get; set; }
+        public string SignatureFilePath {  get; set; }
     }
 }

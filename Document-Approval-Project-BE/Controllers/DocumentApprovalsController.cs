@@ -155,7 +155,6 @@ namespace Document_Approval_Project_BE.Controllers
                     for (int i = 0; i < files.Count; i++)
                     {
                         HttpPostedFile fileUpload = files[i];
-                        FileInfo fileInfo = new FileInfo(fileUpload.FileName);
 
                         string Filepath = GetFilePath(dcument.DocumentApprovalId.ToString());
 
@@ -164,9 +163,16 @@ namespace Document_Approval_Project_BE.Controllers
                             Directory.CreateDirectory(Filepath);
                         }
 
-                        string fullPath = Path.Combine(Filepath, fileUpload.FileName);
+                        string fileName = Path.GetFileNameWithoutExtension(fileUpload.FileName);
+
+                        string fileExtension = Path.GetExtension(fileUpload.FileName);
+
                         string alterPath = "Upload/Files/" +
-                            dcument.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
+                            dcument.DocumentApprovalId.ToString() + "/" + fileName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+
+                        string fullName = dcument.DocumentApprovalId.ToString() + "/" +  fileName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+
+                        string fullPath = GetFilePath(fullName);
 
                         using (var stream = new FileStream(fullPath, FileMode.Create))
                         {
@@ -423,6 +429,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                     )
                 );
+                totalItems = await query.CountAsync();
             }
 
             var dcapproval = query.Skip(skip).Take(limit).ToList();
@@ -807,7 +814,6 @@ namespace Document_Approval_Project_BE.Controllers
                     for (int i = 0; i < files.Count; i++)
                     {
                         HttpPostedFile fileUpload = files[i];
-                        FileInfo fileInfo = new FileInfo(fileUpload.FileName);
 
                         string Filepath = GetFilePath(document.DocumentApprovalId.ToString());
 
@@ -816,9 +822,16 @@ namespace Document_Approval_Project_BE.Controllers
                             Directory.CreateDirectory(Filepath);
                         }
 
-                        string fullPath = Path.Combine(Filepath, fileUpload.FileName);
+                        string fileName = Path.GetFileNameWithoutExtension(fileUpload.FileName);
+
+                        string fileExtension = Path.GetExtension(fileUpload.FileName);
+
                         string alterPath = "Upload/Files/" +
-                            document.DocumentApprovalId.ToString() + "/" + fileUpload.FileName;
+                             document.DocumentApprovalId.ToString() + "/" + fileName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+
+                        string fullName = document.DocumentApprovalId.ToString() + "/" + fileName + "_" + DateTime.Now.Ticks.ToString() + fileExtension;
+
+                        string fullPath = GetFilePath(fullName);
 
                         var fileApproval = new
                         {
@@ -872,6 +885,17 @@ namespace Document_Approval_Project_BE.Controllers
                                             {
                                                 await fileUpload.InputStream.CopyToAsync(stream);
                                             }
+
+                                            string filePathDelete = Path.Combine(HostingEnvironment.MapPath("~/"),existFile.FilePath);
+                                            
+                                            if(File.Exists(filePathDelete))
+                                            {
+                                                File.Delete(filePathDelete);
+
+                                                existFile.FilePath = alterPath;
+
+                                                db.SaveChanges();
+                                            }
                                         }
                                     }
                                 }
@@ -890,9 +914,8 @@ namespace Document_Approval_Project_BE.Controllers
 
                     foreach (var fileToDelete in filesDelete)
                     {
-                        string deleteFilePath = Path.Combine(document.DocumentApprovalId.ToString(), fileToDelete.FileName);
-                        string filePathToDelete = GetFilePath(deleteFilePath);
-                        File.Delete(filePathToDelete);
+                        string deleteFilePath = Path.Combine(HostingEnvironment.MapPath("~/"), fileToDelete.FilePath);
+                        File.Delete(deleteFilePath);
 
                         db.DocumentApprovalFiles.Remove(fileToDelete);
 

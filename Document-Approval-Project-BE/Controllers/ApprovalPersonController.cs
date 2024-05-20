@@ -1,10 +1,12 @@
-﻿using Document_Approval_Project_BE.Models;
+﻿using Document_Approval_Project_BE.Hubs;
+using Document_Approval_Project_BE.Models;
+using Document_Approval_Project_BE.Services;
+using Microsoft.AspNet.SignalR;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Interactive;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Tables;
-using Syncfusion.UI.Xaml.Charts;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Policy;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -26,10 +29,15 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
         private System.Web.HttpContext currentContext = System.Web.HttpContext.Current;
+        private readonly NotificationService _notificationService;
+        public ApprovalPersonController()
+        {
+            _notificationService = new NotificationService();
+        }
 
         [HttpPost]
         [Route("approval")]
-        public IHttpActionResult AddApproval([FromBody] ApprovalPerson approvalPerson)
+        public async Task<IHttpActionResult> AddApproval([FromBody] ApprovalPerson approvalPerson)
         {
             try
             {
@@ -75,6 +83,25 @@ namespace Document_Approval_Project_BE.Controllers
 
                         var getApprovers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 1).ToList();
                         listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                        var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                        var parameterApproved = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = approval.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("APPROVED", parameterApproved, module, item:updateStatus,user:approval);
+
+                        var parameterApproving = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = nextApproval.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameterApproving, module, item: updateStatus, user: nextApproval);
+
                         return Ok(new
                         {
                             state = "true",
@@ -123,7 +150,26 @@ namespace Document_Approval_Project_BE.Controllers
 
                             var nextApprovers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 1).ToList();
                             var listSigner = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
+                            
                             listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                            var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                            var parameterApproved = new
+                            {
+                                code = updateStatus.RequestCode,
+                                userDisplayName = approval.ApprovalPersonName,
+                            };
+
+                            await _notificationService.SendNotification("APPROVED", parameterApproved, module, item: updateStatus, user: approval);
+
+                            var parameterSign = new
+                            {
+                                code = updateStatus.RequestCode,
+                                userDisplayName = nextSigner.ApprovalPersonName,
+                            };
+
+                            await _notificationService.SendNotification("WAITING_FOR_SIGNATURE", parameterSign, module, item: updateStatus, user: nextSigner);
 
                             return Ok(new
                             {

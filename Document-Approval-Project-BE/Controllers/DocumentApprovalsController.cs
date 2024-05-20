@@ -1,5 +1,8 @@
 ﻿using DevOne.Security.Cryptography.BCrypt;
+using Document_Approval_Project_BE.Hubs;
 using Document_Approval_Project_BE.Models;
+using Document_Approval_Project_BE.Services;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
@@ -36,6 +39,14 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
         private System.Web.HttpContext currentContext = System.Web.HttpContext.Current;
+        private readonly NotificationService _notificationService;
+        private readonly IHubContext _hubContext = GlobalHost.ConnectionManager.GetHubContext<SignalRHub>();
+
+        public DocumentApprovalsController()
+        {
+            _notificationService = new NotificationService();
+        }
+
         [NonAction]
         public string GetFilePath(string path)
         {
@@ -212,6 +223,19 @@ namespace Document_Approval_Project_BE.Controllers
                         };
 
                         db.DocumentApprovalComments.Add(comment);
+
+                        var parameter = new
+                        {
+                            code = dcument.RequestCode,
+                            userDisplayName = dcument.ApplicantName,
+                        };
+                        var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                        var approval = db.ApprovalPersons.FirstOrDefault(p => p.DocumentApprovalId == dcument.DocumentApprovalId 
+                        && p.PersonDuty == 1 && p.Index == 1 && p.IsProcessing == true);
+
+                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameter, module, dcument, approval);
+
                     }
 
                     db.SaveChanges();
@@ -269,7 +293,7 @@ namespace Document_Approval_Project_BE.Controllers
             var listFilter = data["dataFilter"];
 
             IQueryable<DocumentApproval> query = db.DocumentApprovals.OrderByDescending(d => d.CreateDate)
-          .Where(u => db.ApprovalPersons.Any(p => p.DocumentApprovalId == u.DocumentApprovalId && p.ApprovalPersonId == UserId));
+            .Where(u => db.ApprovalPersons.Any(p => p.DocumentApprovalId == u.DocumentApprovalId && p.ApprovalPersonId == UserId));
 
             int totalItems = await db.DocumentApprovals.CountAsync();
 
@@ -464,8 +488,6 @@ namespace Document_Approval_Project_BE.Controllers
                 d.IsReject,
                 subject = d.Subject,
             }).ToList();
-
-
 
             return Ok(new
             {

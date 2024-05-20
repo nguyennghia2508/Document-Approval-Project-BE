@@ -12,6 +12,8 @@ using System.Web.Hosting;
 using System.IO;
 using System.Xml.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
+using Document_Approval_Project_BE.Hubs;
 
 namespace Document_Approval_Project_BE.Controllers
 {
@@ -21,6 +23,8 @@ namespace Document_Approval_Project_BE.Controllers
         private readonly ProjectDBContext db = new ProjectDBContext();
         private readonly Authentication auth = new Authentication();
         private System.Web.HttpContext currentContext = System.Web.HttpContext.Current;
+
+        private readonly IHubContext _hubContext = GlobalHost.ConnectionManager.GetHubContext<SignalRHub>();
 
         [NonAction]
         public string GetFilePath(string path)
@@ -285,5 +289,30 @@ namespace Document_Approval_Project_BE.Controllers
             });
 
         }
+
+        [HttpPost]
+        [Route("addModule")]
+        public IHttpActionResult AddModule([FromBody] Module module)
+        {
+            if (module == null)
+            {
+                return Ok(new
+                {
+                    state = "false",
+                    message = "Empty"
+                });
+            }
+            db.Modules.Add(new Module()
+            {
+                ModuleName = module.ModuleName,
+            });
+            db.SaveChanges();
+            return Ok(new
+            {
+                state = "true",
+                message = "Add module success"
+            });
+        }
+
     }
 }

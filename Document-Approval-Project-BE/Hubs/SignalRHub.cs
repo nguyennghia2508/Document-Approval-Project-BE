@@ -2,7 +2,6 @@
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNet.SignalR.Messaging;
-using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

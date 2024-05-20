@@ -4,7 +4,6 @@ using Document_Approval_Project_BE.Services;
 using Microsoft.AspNet.SignalR;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
-using Syncfusion.Pdf.Interactive;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Tables;
 using System;

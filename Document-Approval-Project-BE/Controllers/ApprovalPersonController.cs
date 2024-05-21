@@ -767,5 +767,131 @@ namespace Document_Approval_Project_BE.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        [HttpPost]
+        [Route("forward")]
+        public IHttpActionResult forwardPerson([FromBody] ApprovalPerson approvalPerson)
+        {
+            try
+            {
+                var forward = db.ApprovalPersons.
+                    FirstOrDefault(p => p.Index == approvalPerson.Index
+                    && p.PersonDuty == approvalPerson.PersonDuty
+                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
+
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+                var listComment = new List<DocumentApprovalComment>();
+                var updateStatus = db.DocumentApprovals.FirstOrDefault(p => p.DocumentApprovalId == forward.DocumentApprovalId);
+
+
+                if (forward != null && forward.IsProcessing == true)
+                {
+                    comment = new DocumentApprovalComment
+                    {
+                        DocumentApprovalId = approvalPerson.DocumentApprovalId,
+                        ApprovalPersonId = approvalPerson.ApprovalPersonId,
+                        ApprovalPersonName = approvalPerson.ApprovalPersonName,
+                        CommentContent = approvalPerson.Comment,
+                        CommentStatus = 4,
+                        ForwardName = approvalPerson.ApprovalPersonEmail
+
+                    };
+
+                    var shared = new ApprovalPerson
+                    {
+                        ApprovalPersonId = forward.ApprovalPersonId,
+                        ApprovalPersonName = forward.ApprovalPersonName,
+                        DocumentApprovalId = forward.DocumentApprovalId,
+                        ApprovalPersonEmail = forward.ApprovalPersonEmail,
+                    };
+                    db.ApprovalPersons.Add(shared);
+
+                    forward.ApprovalPersonId = approvalPerson.ApprovalPersonId;
+                    forward.ApprovalPersonName = approvalPerson.ApprovalPersonName;
+                    forward.ApprovalPersonEmail = approvalPerson.ApprovalPersonEmail;
+
+
+
+
+                    db.DocumentApprovalComments.Add(comment);
+                    db.SaveChanges();
+
+
+                    var getAllPerson = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
+                    listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                    return Ok(new
+                    {
+                        state = "true",
+                        document = updateStatus,
+                        approvers = getAllPerson.Where(p => p.PersonDuty == 1).ToList(),
+                        signers = getAllPerson.Where(p => p.PersonDuty == 2).ToList(),
+                        forwardEmail = forward,
+                        comments = listComment.OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                        })
+                        .ToList(),
+                    });
+                }
+                return Ok(new
+                {
+                    state = "false",
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("shared")]
+        public IHttpActionResult sharePerson([FromBody] List<ApprovalPerson> approvalPersons)
+        {
+
+            try
+            {
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+                var listComment = new List<DocumentApprovalComment>();
+
+                if (approvalPersons.Count > 0)
+                {
+                    foreach (var item in approvalPersons)
+                    {
+                        var existShare = db.ApprovalPersons.FirstOrDefault(p => p.ApprovalPersonId == item.ApprovalPersonId
+                        && p.DocumentApprovalId == item.DocumentApprovalId);
+                        if (existShare == null)
+                        {
+                            db.ApprovalPersons.Add(item);
+                        }
+                        db.SaveChanges();
+                    }
+                    return Ok(new
+                    {
+                        state = "true",
+                        comments = listComment.OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                        })
+                        .ToList(),
+                    });
+                }
+                return Ok(new
+                {
+                    state = "false",
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 }

@@ -4,7 +4,6 @@ using Document_Approval_Project_BE.Services;
 using Microsoft.AspNet.SignalR;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
-using Syncfusion.Pdf.Interactive;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Tables;
 using System;
@@ -43,7 +42,7 @@ namespace Document_Approval_Project_BE.Controllers
             {
                 var approval = db.ApprovalPersons
                     .FirstOrDefault(p => p.ApprovalPersonId == approvalPerson.ApprovalPersonId
-                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId 
+                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId
                     && p.Index == approvalPerson.Index && p.PersonDuty == 1);
 
                 DocumentApprovalComment comment = new DocumentApprovalComment();
@@ -63,7 +62,7 @@ namespace Document_Approval_Project_BE.Controllers
                     {
                         approval.IsApprove = true;
                         approval.IsProcessing = false;
-                        
+
                         comment = new DocumentApprovalComment
                         {
                             DocumentApprovalId = approvalPerson.DocumentApprovalId,
@@ -92,7 +91,7 @@ namespace Document_Approval_Project_BE.Controllers
                             userDisplayName = approval.ApprovalPersonName,
                         };
 
-                        await _notificationService.SendNotification("APPROVED", parameterApproved, module, item:updateStatus,user:approval);
+                        await _notificationService.SendNotification("APPROVED", parameterApproved, module, item: updateStatus, user: approval);
 
                         var parameterApproving = new
                         {
@@ -150,7 +149,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                             var nextApprovers = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 1).ToList();
                             var listSigner = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
-                            
+
                             listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
 
                             var module = db.Modules.FirstOrDefault(p => p.Id == 2);
@@ -211,13 +210,13 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpPost]
         [Route("signed")]
-        public IHttpActionResult AddSigner([FromBody] ApprovalPerson approvalPerson)
+        public async Task<IHttpActionResult> AddSigner([FromBody] ApprovalPerson approvalPerson)
         {
             try
             {
                 var signed = db.ApprovalPersons
                     .FirstOrDefault(p => p.ApprovalPersonId == approvalPerson.ApprovalPersonId
-                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId 
+                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId
                     && p.Index == approvalPerson.Index && p.PersonDuty == 2);
 
                 DocumentApprovalComment comment = new DocumentApprovalComment();
@@ -257,9 +256,9 @@ namespace Document_Approval_Project_BE.Controllers
                         var files = db.DocumentApprovalFiles.Where(f => f.DocumentApprovalId == updateStatus.DocumentApprovalId).ToList();
                         foreach (var file in files)
                         {
-                            if(file.DocumentType == 1)
+                            if (file.DocumentType == 1)
                             {
-                                if(file.FileType.Equals("application/pdf"))
+                                if (file.FileType.Equals("application/pdf"))
                                 {
                                     var filePath = Path.Combine(HostingEnvironment.MapPath("~/"), file.FilePath);
 
@@ -351,7 +350,7 @@ namespace Document_Approval_Project_BE.Controllers
 
                                                                     if (signerNumber == signed.Index)
                                                                     {
-                                                                        
+
                                                                         PdfPageBase currentPage = (field as PdfLoadedSignatureField).Page;
 
                                                                         PdfGraphics graphics = currentPage.Graphics;
@@ -406,6 +405,25 @@ namespace Document_Approval_Project_BE.Controllers
 
                         var getSigners = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
                         listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+                        var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                        var parameterSigned = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = signed.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("SIGNED", parameterSigned, module, item: updateStatus, user: signed);
+
+                        var parameterSigning = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = nextSigned.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("WAITING_FOR_SIGNATURE", parameterSigning, module, item: updateStatus, user: nextSigned);
+
 
                         return Ok(new
                         {
@@ -600,6 +618,16 @@ namespace Document_Approval_Project_BE.Controllers
                         var nextSigners = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId && p.PersonDuty == 2).ToList();
                         listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
 
+                        var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                        var parameterSigned = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = signed.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("SIGNED", parameterSigned, module, item: updateStatus, user: signed);
+
                         return Ok(new
                         {
                             state = "true",
@@ -639,7 +667,7 @@ namespace Document_Approval_Project_BE.Controllers
 
         [HttpPost]
         [Route("reject")]
-        public IHttpActionResult RejectDocument([FromBody] ApprovalPerson approvalPerson)
+        public async Task<IHttpActionResult> RejectDocument([FromBody] ApprovalPerson approvalPerson)
         {
             try
             {
@@ -647,6 +675,15 @@ namespace Document_Approval_Project_BE.Controllers
                     .FirstOrDefault(p => p.ApprovalPersonId == approvalPerson.ApprovalPersonId
                     && p.DocumentApprovalId == approvalPerson.DocumentApprovalId
                     && p.Index == approvalPerson.Index && p.PersonDuty == approvalPerson.PersonDuty);
+
+                var applicant = db.DocumentApprovals
+                    .FirstOrDefault(p => p.DocumentApprovalId == person.DocumentApprovalId);
+
+                var applicantMail = db.Users
+                   .FirstOrDefault(p => p.Id == applicant.ApplicantId);
+                
+
+
 
                 DocumentApprovalComment comment = new DocumentApprovalComment();
                 var listComment = new List<DocumentApprovalComment>();
@@ -678,6 +715,25 @@ namespace Document_Approval_Project_BE.Controllers
 
                     var getAllPerson = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
                     listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+                    ApprovalPerson Email = new ApprovalPerson();
+                    Email = new ApprovalPerson {
+                        //ApprovalPersonName=approvalPerson.ApprovalPersonName,
+                        ApprovalPersonEmail = applicantMail.Email,
+                        DocumentApprovalId= approvalPerson.DocumentApprovalId,
+                      
+                    };
+
+                    //person.ApprovalPersonEmail = applicantMail.Email;
+
+                    var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                    var parameterRejected = new
+                    {
+                        code = updateStatus.RequestCode,
+                        userDisplayName = updateStatus.ApplicantName,
+                    };
+
+                    await _notificationService.SendNotification("REJECTED", parameterRejected, module, item: updateStatus, user: Email);
 
                     return Ok(new
                     {
@@ -757,6 +813,158 @@ namespace Document_Approval_Project_BE.Controllers
                             document,
                         });
                     }
+                }
+                return Ok(new
+                {
+                    state = "false",
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("forward")]
+        public async Task<IHttpActionResult> forwardPerson([FromBody] ApprovalPerson approvalPerson)
+        {
+            try
+            {
+                var forward = db.ApprovalPersons.
+                    FirstOrDefault(p => p.Index == approvalPerson.Index
+                    && p.PersonDuty == approvalPerson.PersonDuty
+                    && p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
+
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+                var listComment = new List<DocumentApprovalComment>();
+                var updateStatus = db.DocumentApprovals.FirstOrDefault(p => p.DocumentApprovalId == forward.DocumentApprovalId);
+
+
+                if (forward != null && forward.IsProcessing == true)
+                {
+                    comment = new DocumentApprovalComment
+                    {
+                        DocumentApprovalId = approvalPerson.DocumentApprovalId,
+                        ApprovalPersonId = approvalPerson.ApprovalPersonId,
+                        ApprovalPersonName = approvalPerson.ApprovalPersonName,
+                        CommentContent = approvalPerson.Comment,
+                        CommentStatus = 4,
+                        ForwardName = approvalPerson.ApprovalPersonEmail
+
+                    };
+
+                    var shared = new ApprovalPerson
+                    {
+                        ApprovalPersonId = forward.ApprovalPersonId,
+                        ApprovalPersonName = forward.ApprovalPersonName,
+                        DocumentApprovalId = forward.DocumentApprovalId,
+                        ApprovalPersonEmail = forward.ApprovalPersonEmail,
+                    };
+                    db.ApprovalPersons.Add(shared);
+
+                    forward.ApprovalPersonId = approvalPerson.ApprovalPersonId;
+                    forward.ApprovalPersonName = approvalPerson.ApprovalPersonName;
+                    forward.ApprovalPersonEmail = approvalPerson.ApprovalPersonEmail;
+                    forward.PersonDuty = approvalPerson.PersonDuty;
+
+
+
+
+                    db.DocumentApprovalComments.Add(comment);
+                    db.SaveChanges();
+
+
+                    var getAllPerson = db.ApprovalPersons.Where(p => p.DocumentApprovalId == approvalPerson.DocumentApprovalId);
+                    listComment = db.DocumentApprovalComments.Where(c => c.DocumentApprovalId == approvalPerson.DocumentApprovalId).ToList();
+
+
+
+                    var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                    if (forward != null && forward.PersonDuty == 1)
+                    {
+                        var parameterApproving = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = forward.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameterApproving, module, item: updateStatus, user: forward);
+                    }
+
+                   else if (forward != null && forward.PersonDuty == 2)
+                    {
+                        var parameterSigning = new
+                        {
+                            code = updateStatus.RequestCode,
+                            userDisplayName = forward.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("WAITING_FOR_SIGNATURE", parameterSigning, module, item: updateStatus, user: forward);
+                    }
+                    return Ok(new
+                    {
+                        state = "true",
+                        document = updateStatus,
+                        approvers = getAllPerson.Where(p => p.PersonDuty == 1).ToList(),
+                        signers = getAllPerson.Where(p => p.PersonDuty == 2).ToList(),
+                        forwardEmail = forward,
+                        comments = listComment.OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                        })
+                        .ToList(),
+                    });
+                }
+                return Ok(new
+                {
+                    state = "false",
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("shared")]
+        public IHttpActionResult sharePerson([FromBody] List<ApprovalPerson> approvalPersons)
+        {
+
+            try
+            {
+                DocumentApprovalComment comment = new DocumentApprovalComment();
+                var listComment = new List<DocumentApprovalComment>();
+
+                if (approvalPersons.Count > 0)
+                {
+                    foreach (var item in approvalPersons)
+                    {
+                        var existShare = db.ApprovalPersons.FirstOrDefault(p => p.ApprovalPersonId == item.ApprovalPersonId
+                        && p.DocumentApprovalId == item.DocumentApprovalId);
+                        if (existShare == null)
+                        {
+                            db.ApprovalPersons.Add(item);
+                        }
+                        db.SaveChanges();
+                    }
+                    return Ok(new
+                    {
+                        state = "true",
+                        comments = listComment.OrderByDescending(d => d.CreateDate)
+                        .Where(c => c.ParentNode == null)
+                        .Select(c => new
+                        {
+                            comment = c,
+                            children = listComment.OrderByDescending(d => d.CreateDate).Where(child => child.ParentNode == c.Id).ToList()
+                        })
+                        .ToList(),
+                    });
                 }
                 return Ok(new
                 {

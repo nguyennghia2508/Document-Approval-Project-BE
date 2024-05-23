@@ -34,10 +34,10 @@ namespace Document_Approval_Project_BE.Services
                 {
                     ModuleId = module.Id,
                     Type = type,
-                    CreateBy = user.ApprovalPersonName,
+                    CreateBy = user.ApprovalPersonId,
                     Url = url,
                     Parameters = JsonConvert.SerializeObject(parameter),
-                    ItemId = item.Id
+                    ItemId = item.DocumentApprovalId
                 };
 
                 db.Notifications.Add(addNotification);

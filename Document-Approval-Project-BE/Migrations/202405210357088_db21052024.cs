@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class updatedbv2 : DbMigration
+    public partial class db21052024 : DbMigration
     {
         public override void Up()
         {
@@ -27,17 +27,20 @@
                         Avatar = c.String(),
                         CreateDate = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
                         CreateBy = c.String(),
-                        ItemId = c.String(),
+                        ItemId = c.Int(nullable: false),
                         Type = c.String(),
                         Parameters = c.String(),
                         Url = c.String(),
+                        IsHidden = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
+            DropColumn("dbo.ApprovalPersons", "IsShare");
         }
         
         public override void Down()
         {
+            AddColumn("dbo.ApprovalPersons", "IsShare", c => c.Boolean(nullable: false));
             DropTable("dbo.Notifications");
             DropTable("dbo.Modules");
         }

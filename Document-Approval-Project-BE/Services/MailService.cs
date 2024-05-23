@@ -46,7 +46,7 @@ namespace Document_Approval_Project_BE.Services
                     htmlEmail = htmlEmail.Replace("{{Content}}", document.ContentSum);
                     htmlEmail = htmlEmail.Replace("{{Applicant}}", document.ApplicantName);
                     htmlEmail = htmlEmail.Replace("{{Type}}", "Approve");
-                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "approval");
+                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "is waiting for your approval");
                 }
                 else if (type.Equals("APPROVED"))
                 {
@@ -59,7 +59,7 @@ namespace Document_Approval_Project_BE.Services
                     htmlEmail = htmlEmail.Replace("{{Content}}", document.ContentSum);
                     htmlEmail = htmlEmail.Replace("{{Applicant}}", document.ApplicantName);
                     htmlEmail = htmlEmail.Replace("{{Type}}", "Approve");
-                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "approved");
+                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "is approved");
                 }
                 else if (type.Equals("WAITING_FOR_SIGNATURE"))
                 {
@@ -72,8 +72,37 @@ namespace Document_Approval_Project_BE.Services
                     htmlEmail = htmlEmail.Replace("{{Content}}", document.ContentSum);
                     htmlEmail = htmlEmail.Replace("{{Applicant}}", document.ApplicantName);
                     htmlEmail = htmlEmail.Replace("{{Type}}", "Sign");
-                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "signature");
+                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "is waiting for your signature");
                 }
+                else if (type.Equals("SIGNED"))
+                {
+                    message.Subject = "[DOCUMENT] Request " + document.RequestCode + " is signed";
+                    htmlEmail = htmlEmail.Replace("{{UserName}}", person.ApprovalPersonName);
+                    htmlEmail = htmlEmail.Replace("{{RequestCode}}", document.RequestCode);
+                    htmlEmail = htmlEmail.Replace("{{Subject}}", document.Subject);
+                    htmlEmail = htmlEmail.Replace("{{Category}}", document.CategoryName);
+                    htmlEmail = htmlEmail.Replace("{{DocumentType}}", document.DocumentTypeName);
+                    htmlEmail = htmlEmail.Replace("{{Content}}", document.ContentSum);
+                    htmlEmail = htmlEmail.Replace("{{Applicant}}", document.ApplicantName);
+                    htmlEmail = htmlEmail.Replace("{{Type}}", "Sign");
+                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "is signed");
+                }
+                else if (type.Equals("REJECTED"))
+                {
+                    message.Subject = "[DOCUMENT] Request " + document.RequestCode + " is reject";
+                    htmlEmail = htmlEmail.Replace("{{UserName}}", person.ApprovalPersonName);
+                    htmlEmail = htmlEmail.Replace("{{RequestCode}}", document.RequestCode);
+                    htmlEmail = htmlEmail.Replace("{{Subject}}", document.Subject);
+                    htmlEmail = htmlEmail.Replace("{{Category}}", document.CategoryName);
+                    htmlEmail = htmlEmail.Replace("{{DocumentType}}", document.DocumentTypeName);
+                    htmlEmail = htmlEmail.Replace("{{Content}}", document.ContentSum);
+                    htmlEmail = htmlEmail.Replace("{{Applicant}}", document.ApplicantName);
+                    htmlEmail = htmlEmail.Replace("{{Type}}", "Reject");
+                    htmlEmail = htmlEmail.Replace("{{TypeName}}", "is reject");
+                }
+
+
+
 
                 var bodyBuilder = new BodyBuilder
                 {
@@ -286,7 +315,7 @@ namespace Document_Approval_Project_BE.Services
                                     <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
                                         <tbody>
                                             <tr>
-                                                <td style=""padding-bottom:20px""><b>Request {{RequestCode}} is waiting for your {{TypeName}}</b>
+                                                <td style=""padding-bottom:20px""><b>Request {{RequestCode}} {{TypeName}}</b>
                                                 </td>
                                             </tr>
                                             <tr>

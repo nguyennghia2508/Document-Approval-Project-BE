@@ -21,10 +21,11 @@ namespace Document_Approval_Project_BE.Services
             _mailService = new MailService();
         }
 
-        public async Task SendNotification(string type, object parameter, Module module, DocumentApproval item, ApprovalPerson user)
+        public async Task SendNotification(string type, object parameter, Module module, DocumentApproval item, int userId,string message)
         {
             try
             {
+                var person = db.Users.FirstOrDefault(p => p.Id == userId);
                 var url = "";
                 if (module.Id == 2)
                 {
@@ -34,19 +35,19 @@ namespace Document_Approval_Project_BE.Services
                 {
                     ModuleId = module.Id,
                     Type = type,
-                    CreateBy = user.ApprovalPersonName,
+                    CreateBy = person.Id,
                     Url = url,
                     Parameters = JsonConvert.SerializeObject(parameter),
-                    ItemId = item.Id
+                    ItemId = item.DocumentApprovalId
                 };
 
                 db.Notifications.Add(addNotification);
 
                 db.SaveChanges();
 
-                await _mailService.SendEmail(item, user, type, url);
+                await _mailService.SendEmail(item, person, type, url,message);
 
-                _hubContext.Clients.User(user.ApprovalPersonId.ToString()).addNotification(new
+                _hubContext.Clients.User(person.Id.ToString()).addNotification(new
                 {
                     type,
                     parameter,
@@ -58,6 +59,5 @@ namespace Document_Approval_Project_BE.Services
                 throw ex;
             }
         }
-
     }
 }

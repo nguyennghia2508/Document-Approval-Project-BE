@@ -13,6 +13,11 @@ using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Xml.Linq;
+using Document_Approval_Project_BE.Hubs;
+using Document_Approval_Project_BE.Services;
+using Microsoft.AspNet.SignalR;
+using System.Reflection.Metadata;
+using System.Data;
 
 namespace Document_Approval_Project_BE.Controllers
 {
@@ -21,6 +26,12 @@ namespace Document_Approval_Project_BE.Controllers
     {
         private readonly ProjectDBContext db = new ProjectDBContext();
         private System.Web.HttpContext currentContext = System.Web.HttpContext.Current;
+        private readonly NotificationService _notificationService;
+
+        public CommentController()
+        {
+            _notificationService = new NotificationService();
+        }
         public string GetFilePath(string path)
         {
             string rootPath = HostingEnvironment.MapPath("~/");
@@ -46,6 +57,8 @@ namespace Document_Approval_Project_BE.Controllers
                 var body = JsonConvert.DeserializeObject<DocumentApprovalComment>(bodyJson);
 
                 var files = httpRequest.Files;
+                var documentComment = new DocumentApproval();
+
                 DocumentApprovalComment comment = new DocumentApprovalComment();
                 if (body != null)
                 {
@@ -58,6 +71,7 @@ namespace Document_Approval_Project_BE.Controllers
                         CommentContent = body.CommentContent,
                         IsSubComment = body.IsSubComment,
                     };
+                    documentComment = db.DocumentApprovals.FirstOrDefault(p => p.DocumentApprovalId == body.DocumentApprovalId);
                 }
 
                 db.DocumentApprovalComments.Add(comment);
@@ -65,6 +79,10 @@ namespace Document_Approval_Project_BE.Controllers
                 db.SaveChanges();
 
                 var listComment = db.DocumentApprovalComments.ToList();
+
+                var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                var applicant = db.Users.FirstOrDefault(p => p.Id == documentComment.ApplicantId);
 
                 if (files.Count > 0)
                 {
@@ -120,6 +138,112 @@ namespace Document_Approval_Project_BE.Controllers
 
                     db.SaveChanges();
 
+                    if (documentComment.Status == 1)
+                    {
+                        var approverList = db.ApprovalPersons
+                        .Where(p => p.DocumentApprovalId == documentComment.DocumentApprovalId && p.PersonDuty == 1).ToList();
+
+                        var combinedList = new List<UserInterface>
+                    {
+                        new UserInterface
+                        {
+                            Id = applicant.Id,
+                            Name = applicant.Username,
+                        }
+                    };
+
+                        foreach (var item in approverList)
+                        {
+                            if (item.IsProcessing) // Assuming 'isProcessing' is a boolean property in approverList items
+                            {
+                                if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                                {
+                                    combinedList.Add(new UserInterface
+                                    {
+                                        Id = item.ApprovalPersonId,
+                                        Name = item.ApprovalPersonName,
+                                    });
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                                {
+                                    combinedList.Add(new UserInterface
+                                    {
+                                        Id = item.ApprovalPersonId,
+                                        Name = item.ApprovalPersonName,
+                                    });
+                                }
+                            }
+                        }
+
+                        foreach (var user in combinedList)
+                        {
+                            var parameter = new
+                            {
+                                code = documentComment.RequestCode,
+                                userDisplayName = body.ApprovalPersonName,
+                            };
+
+                            await _notificationService.SendNotification("COMMENT", parameter, module, documentComment, user.Id, body.CommentContent);
+                        }
+                    }
+                    else if (documentComment.Status == 1)
+                    {
+                        var approverList = db.ApprovalPersons
+                        .Where(p => p.DocumentApprovalId == documentComment.DocumentApprovalId && p.PersonDuty == 2
+                        && p.ApprovalPersonId != body.ApprovalPersonId).ToList();
+
+                        var combinedList = new List<UserInterface>
+                        {
+                            new UserInterface
+                            {
+                                Id = applicant.Id,
+                                Name = applicant.Username,
+                            }
+                        };
+
+                        foreach (var item in approverList)
+                        {
+                            if (item.IsProcessing) // Assuming 'isProcessing' is a boolean property in approverList items
+                            {
+                                if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                                {
+                                    combinedList.Add(new UserInterface
+                                    {
+                                        Id = item.ApprovalPersonId,
+                                        Name = item.ApprovalPersonName,
+                                    });
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                                {
+                                    combinedList.Add(new UserInterface
+                                    {
+                                        Id = item.ApprovalPersonId,
+                                        Name = item.ApprovalPersonName,
+                                    });
+                                }
+                            }
+                        }
+
+                        foreach (var user in combinedList)
+                        {
+                            var parameter = new
+                            {
+                                code = documentComment.RequestCode,
+                                userDisplayName = body.ApprovalPersonName,
+                            };
+
+                            await _notificationService.SendNotification("COMMENT", parameter, module, documentComment, user.Id, body.CommentContent);
+                        }
+                    }
+
                     return Ok(new
                     {
                         state = "true",
@@ -137,6 +261,113 @@ namespace Document_Approval_Project_BE.Controllers
                 }
 
                 db.SaveChanges();
+
+                if (documentComment.Status == 1)
+                {
+                    var approverList = db.ApprovalPersons
+                    .Where(p => p.DocumentApprovalId == documentComment.DocumentApprovalId && p.PersonDuty == 1 ).ToList();
+
+                    var combinedList = new List<UserInterface>
+                    {
+                        new UserInterface
+                        {
+                            Id = applicant.Id,
+                            Name = applicant.Username,
+                        }
+                    };
+
+                    foreach (var item in approverList)
+                    {
+                        if (item.IsProcessing) // Assuming 'isProcessing' is a boolean property in approverList items
+                        {
+                            if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                            {
+                                combinedList.Add(new UserInterface
+                                {
+                                    Id = item.ApprovalPersonId,
+                                    Name = item.ApprovalPersonName,
+                                });
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                            {
+                                combinedList.Add(new UserInterface
+                                {
+                                    Id = item.ApprovalPersonId,
+                                    Name = item.ApprovalPersonName,
+                                });
+                            }
+                        }
+                    }
+
+                    foreach (var user in combinedList)
+                    {
+                        var parameter = new
+                        {
+                            code = documentComment.RequestCode,
+                            userDisplayName = body.ApprovalPersonName,
+                        };
+
+                        await _notificationService.SendNotification("COMMENT", parameter, module, documentComment, user.Id,body.CommentContent);
+                    }
+                }
+                else if (documentComment.Status == 1)
+                {
+                    var approverList = db.ApprovalPersons
+                    .Where(p => p.DocumentApprovalId == documentComment.DocumentApprovalId && p.PersonDuty == 2
+                    && p.ApprovalPersonId != body.ApprovalPersonId).ToList();
+
+                    var combinedList = new List<UserInterface>
+                        {
+                            new UserInterface
+                            {
+                                Id = applicant.Id,
+                                Name = applicant.Username,
+                            }
+                        };
+
+                    foreach (var item in approverList)
+                    {
+                        if (item.IsProcessing) // Assuming 'isProcessing' is a boolean property in approverList items
+                        {
+                            if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                            {
+                                combinedList.Add(new UserInterface
+                                {
+                                    Id = item.ApprovalPersonId,
+                                    Name = item.ApprovalPersonName,
+                                });
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            if (!combinedList.Any(ui => ui.Id == item.ApprovalPersonId))
+                            {
+                                combinedList.Add(new UserInterface
+                                {
+                                    Id = item.ApprovalPersonId,
+                                    Name = item.ApprovalPersonName,
+                                });
+                            }
+                        }
+                    }
+
+                    foreach (var user in combinedList)
+                    {
+                        var parameter = new
+                        {
+                            code = documentComment.RequestCode,
+                            userDisplayName = body.ApprovalPersonName,
+                            message = body.CommentContent
+                        };
+
+                        await _notificationService.SendNotification("COMMENT", parameter, module, documentComment, user.Id,body.CommentContent);
+                    }
+                }
 
                 return Ok(new
                 {
@@ -159,5 +390,10 @@ namespace Document_Approval_Project_BE.Controllers
                 return InternalServerError(ex);
             }
         }
+    }
+    public class UserInterface
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

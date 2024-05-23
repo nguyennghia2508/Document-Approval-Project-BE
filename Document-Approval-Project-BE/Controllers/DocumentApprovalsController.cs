@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -232,9 +233,9 @@ namespace Document_Approval_Project_BE.Controllers
                         var module = db.Modules.FirstOrDefault(p => p.Id == 2);
 
                         var approval = db.ApprovalPersons.FirstOrDefault(p => p.DocumentApprovalId == dcument.DocumentApprovalId 
-                        && p.PersonDuty == 1 && p.Index == 1 && p.IsProcessing == true);
+                        && p.PersonDuty == 1 && p.Index == 1 && p.IsProcessing == true).ApprovalPersonId;
 
-                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameter, module, dcument, approval);
+                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameter, module, dcument, approval,null);
 
                     }
 
@@ -955,6 +956,18 @@ namespace Document_Approval_Project_BE.Controllers
                             CommentContent = "Submit the request",
                             IsFirst = true,
                         };
+
+                        var parameter = new
+                        {
+                            code = document.RequestCode,
+                            userDisplayName = document.ApplicantName,
+                        };
+                        var module = db.Modules.FirstOrDefault(p => p.Id == 2);
+
+                        var approval = db.ApprovalPersons.FirstOrDefault(p => p.DocumentApprovalId == document.DocumentApprovalId
+                        && p.PersonDuty == 1 && p.Index == 1 && p.IsProcessing == true).ApprovalPersonId;
+
+                        await _notificationService.SendNotification("WAITING_FOR_APPROVAL", parameter, module, document, approval, null);
                     }
 
                     db.DocumentApprovalComments.Add(comment);
